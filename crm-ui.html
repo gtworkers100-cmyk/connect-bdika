@@ -73,15 +73,21 @@ select.st{border:1.5px solid var(--line);border-radius:10px;padding:7px 8px;back
 .view button{border:0;background:#fff;padding:8px 12px;cursor:pointer;font-size:14px;color:var(--muted)}
 .view button.on{background:var(--navy);color:#fff}
 .tw{overflow-x:auto;background:var(--card);border-radius:14px;box-shadow:0 4px 14px rgba(34,44,95,.06)}
-table.lt{width:100%;border-collapse:collapse;min-width:860px}
+table.lt{width:100%;border-collapse:collapse;min-width:1000px;table-layout:fixed}
 table.lt th{background:#F0F1F8;color:var(--muted);font-weight:600;font-size:13px;padding:10px 8px;text-align:center;position:sticky;top:0}
-table.lt td{padding:9px 8px;border-top:1px solid var(--line);text-align:center;font-size:14px;vertical-align:middle}
+table.lt td{padding:0 8px;height:58px;border-top:1px solid var(--line);text-align:center;font-size:14px;vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+table.lt td.sm{text-align:right;color:var(--muted);font-size:13.5px}
+table.lt td.nm{overflow:hidden;text-overflow:ellipsis}
+table.lt tbody tr{transition:background .15s}
 table.lt td.nm{text-align:right;font-weight:700;border-right:4px solid var(--line)}
 table.lt tr.f-matim td.nm{border-right-color:var(--teal-d)}table.lt tr.f-livdika td.nm{border-right-color:#E8B33B}table.lt tr.f-low td.nm{border-right-color:#B9BED6}
 table.lt td.nm small{display:block;color:var(--muted);font-weight:400;font-size:12.5px}
-table.lt tr:hover td{background:#FAFAFD}
+table.lt tbody tr:hover td{background:#F7F7FC}
+table.lt .b{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
+table.lt select.st{width:100%}
+table.lt .btn{min-height:32px;padding:4px 10px;font-size:13px}
+table.lt .btn.more{padding:4px 2px}
 table.lt .acts{justify-content:center;flex-wrap:nowrap}
-table.lt .b,table.lt td.nm,table.lt td:nth-last-child(3){white-space:nowrap}
 table.lt td.nm small{white-space:nowrap}
 table.lt select.st{min-height:34px;padding:5px 6px}
 dialog.dd{border:0;border-radius:16px;padding:0;width:min(560px,calc(100% - 24px));max-height:88vh}
@@ -156,7 +162,7 @@ function weekStart(){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate(
 function load(){
   const rb=$('#refresh'); rb.classList.add('busy'); rb.textContent='טוען...';
   if(!D) $('#app').innerHTML='<div class="load"><div><div class="spin"></div>טוען לידים...</div></div>';
-  google.script.run.withSuccessHandler(d=>{ rb.classList.remove('busy'); rb.textContent='רענון'; if(d.error){$('#app').innerHTML='<div class="empty">'+esc(d.error)+'</div>';return;} const first=!D; D=d; $('#sheet').href=d.url; if(first||!$('.kpis')) render(); else {chrome(); body();} toast('עודכן'); })
+  google.script.run.withSuccessHandler(d=>{ rb.classList.remove('busy'); rb.textContent='רענון'; if(d.error){$('#app').innerHTML='<div class="empty">'+esc(d.error)+'</div>';return;} const first=!D; D=d; $('#sheet').href=d.url; if(first||!$('.kpis')) render(); else {chrome(); body(); toast('עודכן');} })
     .withFailureHandler(e=>{rb.classList.remove('busy'); rb.textContent='רענון'; if(!D) $('#app').innerHTML='<div class="empty">לא הצלחתי לטעון: '+esc(e.message)+'</div>'; else toast('לא הצלחתי לרענן');}).getData();
 }
 
@@ -253,7 +259,7 @@ function list(all){
   if(view==='list'){
     el.className='tw fadein';
     const crmT=tab!=='elem';
-    el.innerHTML=`<table class="lt"><thead><tr><th>שם</th>${crmT?'<th>התאמה</th><th>מצב</th>':'<th>מה לבטח</th>'}<th>פרטים עיקריים</th><th>מקור</th><th>מתי</th><th>סטטוס</th><th></th></tr></thead><tbody>${rows.map(rowHtml).join('')}</tbody></table>`;
+    el.innerHTML=`<table class="lt">${crmT?'<colgroup><col style="width:17%"><col style="width:8%"><col style="width:13%"><col style="width:24%"><col style="width:11%"><col style="width:8%"><col style="width:11%"><col style="width:8%"></colgroup>':'<colgroup><col style="width:20%"><col style="width:14%"><col style="width:26%"><col style="width:12%"><col style="width:8%"><col style="width:12%"><col style="width:8%"></colgroup>'}<thead><tr><th>שם</th>${crmT?'<th>התאמה</th><th>מצב</th>':'<th>מה לבטח</th>'}<th>פרטים עיקריים</th><th>מקור</th><th>מתי</th><th>סטטוס</th><th></th></tr></thead><tbody>${rows.map(rowHtml).join('')}</tbody></table>`;
   } else { el.className='list fadein'; el.innerHTML=rows.map(card).join(''); }
   el.querySelectorAll('[data-row]').forEach(c=>{
     const r=rows.find(x=>x._row==c.dataset.row);
@@ -289,13 +295,13 @@ function card(r){
 function rowHtml(r){
   const x=bits(r);
   return `<tr class="${x.cls}" data-row="${r._row}">
-    <td class="nm">${esc(r['שם'])}<small>${esc(r['טלפון'])}</small></td>
-    ${tab!=='elem'?`<td>${x.fitB}${isB2B(r)?' <span class="b b2b">B2B</span>':''}</td><td>${x.lvlB}</td>`:`<td>${esc(r['מה לבטח']||'')}</td>`}
-    <td style="text-align:right;max-width:280px">${esc(x.summary)}</td>
+    <td class="nm" title="${esc(r['שם'])}">${esc(r['שם'])}${isB2B(r)?' <span class="b b2b" style="font-size:11px;padding:1px 6px">B2B</span>':''}<small>${esc(r['טלפון'])}</small></td>
+    ${tab!=='elem'?`<td>${x.fitB}</td><td>${x.lvlB}</td>`:`<td>${esc(r['מה לבטח']||'')}</td>`}
+    <td class="sm" title="${esc(x.summary)}">${esc(x.summary)}</td>
     <td>${r['מקור']?`<span class="b">${esc(r['מקור'])}</span>`:''}</td>
     <td title="${esc(new Date(r['תאריך']).toLocaleString('he-IL'))}">${ago(r['תאריך'])}</td>
     <td>${x.sel}</td>
-    <td><div class="acts"><a class="btn wa" href="${waLink(r)}" target="_blank" rel="noopener">וואטסאפ</a><button class="btn more" type="button">פרטים</button></div></td>
+    <td><div class="acts"><a class="btn wa" href="${waLink(r)}" target="_blank" rel="noopener" title="וואטסאפ" aria-label="וואטסאפ">WA</a><button class="btn more" type="button">פרטים</button></div></td>
   </tr>`;
 }
 function details(r){
