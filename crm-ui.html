@@ -111,6 +111,20 @@ table.m td:first-child{text-align:right;font-weight:600}
 .note{font-size:13px;color:var(--muted);margin:4px 2px 12px}
 .toast{opacity:0}.toast.show{opacity:1}
 @media (max-width:520px){.kpis{grid-template-columns:repeat(3,1fr);gap:8px}.kpi{padding:10px 4px}.kpi b{font-size:22px}.kpi span{font-size:11.5px;display:block;line-height:1.3}.hwrap h1{font-size:15px}.hwrap img{height:38px}.bar input{flex-basis:100%}}
+html{scrollbar-gutter:stable;overflow-y:scroll}
+#body{min-height:60vh}
+.fadein{animation:fi .28s cubic-bezier(.2,.7,.3,1)}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.kpi,.tab,.chip,.view button,.btn,select.st{transition:background .2s,color .2s,border-color .2s,box-shadow .2s,transform .15s}
+.kpi:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(34,44,95,.10)}
+.card{transition:box-shadow .2s,transform .2s}
+@media (hover:hover){.card:hover{box-shadow:0 10px 24px rgba(34,44,95,.10);transform:translateY(-2px)}}
+dialog.dd[open]{animation:pop .22s cubic-bezier(.2,.7,.3,1)}
+dialog.dd[open]::backdrop{animation:bd .22s ease}
+@keyframes pop{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes bd{from{opacity:0}to{opacity:1}}
+.hbtn.busy{opacity:.6;pointer-events:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -140,9 +154,10 @@ function waLink(r){const n=digits(r['טלפון']);const first=String(r['שם']|
 function weekStart(){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-d.getDay());return d;}
 
 function load(){
-  $('#app').innerHTML='<div class="load"><div><div class="spin"></div>טוען לידים...</div></div>';
-  google.script.run.withSuccessHandler(d=>{ if(d.error){$('#app').innerHTML='<div class="empty">'+esc(d.error)+'</div>';return;} D=d; $('#sheet').href=d.url; render(); })
-    .withFailureHandler(e=>{$('#app').innerHTML='<div class="empty">לא הצלחתי לטעון: '+esc(e.message)+'</div>';}).getData();
+  const rb=$('#refresh'); rb.classList.add('busy'); rb.textContent='טוען...';
+  if(!D) $('#app').innerHTML='<div class="load"><div><div class="spin"></div>טוען לידים...</div></div>';
+  google.script.run.withSuccessHandler(d=>{ rb.classList.remove('busy'); rb.textContent='רענון'; if(d.error){$('#app').innerHTML='<div class="empty">'+esc(d.error)+'</div>';return;} const first=!D; D=d; $('#sheet').href=d.url; if(first||!$('.kpis')) render(); else {chrome(); body();} toast('עודכן'); })
+    .withFailureHandler(e=>{rb.classList.remove('busy'); rb.textContent='רענון'; if(!D) $('#app').innerHTML='<div class="empty">לא הצלחתי לטעון: '+esc(e.message)+'</div>'; else toast('לא הצלחתי לרענן');}).getData();
 }
 
 function rowsFor(t){return (D[t]||[]).slice().sort((a,b)=>String(b['תאריך']).localeCompare(String(a['תאריך'])));}
@@ -172,9 +187,16 @@ function render(){
   </div>
   <div id="body"></div>`;
   $('#app').innerHTML=html;
-  document.querySelectorAll('.kpi').forEach(e=>e.onclick=()=>{kpiF=kpiF===e.dataset.k?'':e.dataset.k;tab='crm';render();});
-  document.querySelectorAll('.tab').forEach(e=>e.onclick=()=>{tab=e.dataset.t;kpiF='';fStatus='';render();});
+  document.querySelectorAll('.kpi').forEach(e=>e.onclick=()=>{kpiF=kpiF===e.dataset.k?'':e.dataset.k;const was=tab;tab='crm';chrome();if(was!=='crm')body();else list(rowsFor('crm'));});
+  document.querySelectorAll('.tab').forEach(e=>e.onclick=()=>{if(tab===e.dataset.t)return;tab=e.dataset.t;kpiF='';fStatus='';fSrc='';chrome();body();});
   body();
+}
+function chrome(){
+  const crm=D.crm, ws=weekStart();
+  const k={new:crm.filter(r=>r['סטטוס']==='חדש').length,week:crm.filter(r=>new Date(r['תאריך'])>=ws).length,work:crm.filter(r=>/ניסיון|נוצר/.test(r['סטטוס'])).length,meet:crm.filter(r=>/נקבעה|חתם/.test(r['סטטוס'])).length,done:crm.filter(r=>/התקיימה|לקוח/.test(r['סטטוס'])).length,client:crm.filter(r=>r['סטטוס']==='לקוח').length};
+  document.querySelectorAll('.kpi').forEach(e=>{e.classList.toggle('on',kpiF===e.dataset.k);e.querySelector('b').textContent=k[e.dataset.k];});
+  const n={crm:crm.length,elem:D.elem.length,low:D.low.length};
+  document.querySelectorAll('.tab').forEach(e=>{const on=tab===e.dataset.t;e.classList.toggle('on',on);e.setAttribute('aria-selected',on);const i=e.querySelector('i');if(i&&n[e.dataset.t]!=null)i.textContent=n[e.dataset.t];});
 }
 function kp(id,cls,n,l){return `<div class="kpi ${cls} ${kpiF===id?'on':''}" data-k="${id}" role="button" tabindex="0"><b>${n}</b><span>${l}</span></div>`;}
 function tb(id,l,n){return `<button class="tab ${tab===id?'on':''}" data-t="${id}" role="tab" aria-selected="${tab===id}">${l}${n!==''?`<i>${n}</i>`:''}</button>`;}
@@ -185,7 +207,7 @@ function body(){
   const srcs=[...new Set(all.map(r=>r['מקור']).filter(Boolean))];
   const sts=tab==='elem'?ELEM_ST:STATUSES;
   $('#body').innerHTML=`
-   <div class="bar">
+   <div class="bar fadein">
      <input id="q" type="search" placeholder="חיפוש שם, טלפון, עיר, הערה" value="${esc(q)}">
      ${tab==='crm'?['הכל','מתאים','לבדיקה','B2B'].map(x=>`<button class="chip ${fFit===x?'on':''}" data-fit="${x}">${x}</button>`).join(''):''}
      <select id="fs"><option value="">כל הסטטוסים</option>${sts.map(s=>`<option ${fStatus===s?'selected':''}>${esc(s)}</option>`).join('')}</select>
@@ -227,11 +249,12 @@ function list(all){
   const el=$('#list');
   document.querySelectorAll('.view button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
   if(!rows.length){el.className='';el.innerHTML='<div class="empty">אין לידים שמתאימים לסינון</div>';return;}
+  el.classList.remove('fadein'); void el.offsetWidth;
   if(view==='list'){
-    el.className='tw';
+    el.className='tw fadein';
     const crmT=tab!=='elem';
     el.innerHTML=`<table class="lt"><thead><tr><th>שם</th>${crmT?'<th>התאמה</th><th>מצב</th>':'<th>מה לבטח</th>'}<th>פרטים עיקריים</th><th>מקור</th><th>מתי</th><th>סטטוס</th><th></th></tr></thead><tbody>${rows.map(rowHtml).join('')}</tbody></table>`;
-  } else { el.className='list'; el.innerHTML=rows.map(card).join(''); }
+  } else { el.className='list fadein'; el.innerHTML=rows.map(card).join(''); }
   el.querySelectorAll('[data-row]').forEach(c=>{
     const r=rows.find(x=>x._row==c.dataset.row);
     c.querySelector('.more').onclick=()=>details(r);
@@ -297,7 +320,7 @@ function save(r,ch,c,done){
   google.script.run.withSuccessHandler(res=>{
     if(!res.ok){toast(res.error||'השמירה נכשלה');return;}
     Object.assign(r,ch); toast('נשמר'); if(done)done();
-    if(c&&'סטטוס' in ch){ const stillOk=filt([r]).length; if(!stillOk) c.remove(); }
+    if(c&&'סטטוס' in ch){ const stillOk=filt([r]).length; if(!stillOk){c.style.transition='opacity .25s,transform .25s';c.style.opacity='0';c.style.transform='scale(.97)';setTimeout(()=>c.remove(),260);} chrome(); }
   }).withFailureHandler(e=>toast('השמירה נכשלה: '+e.message)).updateLead(tab,r._row,r['טלפון'],ch);
 }
 function measure(){
@@ -308,7 +331,7 @@ function measure(){
   D.low.forEach(r=>add(r['מקור'],'leads'));
   const rows=Object.entries(S).sort((a,b)=>b[1].leads-a[1].leads||b[1].start-a[1].start);
   const pct=(a,b)=>b?Math.round(a/b*100)+'%':'-';
-  $('#body').innerHTML=`<p class="note">מקור = הערך של ?src= בקישור שפורסם. כך רואים איזו קבוצה מביאה לידים, ואיפה אנשים נעצרים.</p>
+  $('#body').innerHTML=`<p class="note fadein">מקור = הערך של ?src= בקישור שפורסם. כך רואים איזו קבוצה מביאה לידים, ואיפה אנשים נעצרים.</p>
    ${rows.length?`<div style="overflow-x:auto"><table class="m"><thead><tr><th>מקור</th><th>התחילו</th><th>הגיעו לתוצאה</th><th>מרוצים מהסוכן</th><th>אלמנטרי</th><th>השאירו פרטים</th><th>מתאימים</th><th>המרה</th></tr></thead><tbody>
    ${rows.map(([s,v])=>`<tr><td>${esc(s)}</td><td>${v.start}</td><td>${v.result}</td><td>${v.redline}</td><td>${v.elementary}</td><td>${v.leads}</td><td>${v.matim}</td><td>${pct(v.leads,v.start)}</td></tr>`).join('')}
    </tbody></table></div>`:'<div class="empty">עוד אין נתונים</div>'}`;
