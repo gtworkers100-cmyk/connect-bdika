@@ -127,14 +127,16 @@ dialog::backdrop{background:rgba(20,26,60,.55)}
 .stick.hide{transform:translateY(110%);opacity:0;pointer-events:none}
 /* מצב כהה לפי הגדרות הטלפון */
 @media (prefers-color-scheme: dark){
-  :root{--ink:#E8EAF6;--muted:#A3AACB;--bg:#0E1230;--card:#181D45;--line:#323A70;--warn:#F07AC4;--ok:#3FE0CF;--hi:#C9B6FF;--surf:#20265A;--surf2:#262E68}
+  :root{--ink:#FFFFFF;--muted:#D2D6EE;--bg:#0B0E26;--card:#161A3D;--line:#454E8C;--warn:#F07AC4;--ok:#3FE0CF;--hi:#C9B6FF;--surf:#20265A;--surf2:#262E68}
   body{color:var(--ink)}
   .card{box-shadow:0 10px 30px rgba(0,0,0,.45)}
   .pills li{background:var(--surf);color:var(--ink)}
   .btn-ghost,.link,.nest-l,.chip{color:var(--ink)}
   .note{background:#2A1F4D}
   .bar{background:var(--surf2)}
-  .opt{background:var(--surf);color:var(--ink)}
+  .opt{background:var(--surf);color:var(--ink);font-weight:500}
+  .fine,.hint,.lead,.step-n,.meter-l{color:var(--muted)}
+  .btn-primary[disabled]{opacity:.55;filter:none}
   @media (hover:hover){.opt:hover{border-color:#4A538F}}
   .opt .box{border-color:#6F78AD}
   .opt[aria-checked="true"],.opt[aria-pressed="true"]{background:#2C2464;border-color:var(--hi)}
