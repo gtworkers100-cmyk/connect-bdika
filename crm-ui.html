@@ -131,6 +131,24 @@ dialog.dd[open]::backdrop{animation:bd .22s ease}
 @keyframes bd{from{opacity:0}to{opacity:1}}
 .hbtn.busy{opacity:.6;pointer-events:none}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+select.st{appearance:none;-webkit-appearance:none;border:1px solid var(--line)!important;border-radius:999px!important;padding:6px 12px 6px 28px!important;font-size:13.5px;font-weight:600;background:#F4F5FA url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235B6488' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") no-repeat left 10px center;color:var(--ink)!important;min-height:34px;cursor:pointer}
+select.st[data-s="חדש"]{background-color:#FCEAF6;color:#A3236F!important}
+select.st[data-s^="ניסיון"],select.st[data-s="נוצר קשר"]{background-color:#FFF5DE;color:#8A5A00!important}
+select.st[data-s="נקבעה פגישה"],select.st[data-s^="חתם"]{background-color:#EFE8FB;color:#5B2DA0!important}
+select.st[data-s="פגישה התקיימה"],select.st[data-s="לקוח"],select.st[data-s="הועבר לסוכן"]{background-color:#E3F7F4;color:#0A7D70!important}
+select.st[data-s="לא רלוונטי"]{background-color:#F1F1F3;color:#8A8FA3!important}
+.ic{flex:none;width:34px;height:34px;min-height:34px!important;padding:0!important;border-radius:50%!important;display:inline-grid!important;place-items:center}
+.ic.wa{background:#25D366;color:#fff}
+.btn.ghost{background:#fff;border:1px solid var(--line);color:var(--navy);font-weight:600}
+.btn.ghost:hover{border-color:var(--violet);color:var(--violet)}
+table.lt th{text-align:right!important;padding-right:14px!important}
+table.lt td{text-align:right!important;padding-right:14px!important}
+table.lt td.c,table.lt th.c{text-align:center!important}
+table.lt td.src{color:var(--muted);font-size:13px}
+table.lt .acts{justify-content:flex-start!important;gap:6px}
+table.lt td.nm{border-right-width:3px!important}
+table.lt thead th{border-bottom:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -151,6 +169,12 @@ const ELEM_ST=['חדש','הועבר לסוכן','לא רלוונטי'];
 let D=null, tab='crm', fFit='הכל', fStatus='', fSrc='', q='', kpiF='';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const SRCMAP={"fb-smallbusinessesaregrowing": "עסקים קטנים צומחים", "fb-957311694362184": "פשפשוק - עסקים", "fb-entrepreneurs.israel": "יזמים למען יזמים", "fb-231569131328090": "התאחדות העצמאים", "fb-1598771583735880": "יזמים ומשקיעים - רעיונות וחיבורים עסקיים", "fb-582348725223952": "יזמים צעירים", "fb-KsharimBiz": "קשרים - עסקים קטנים ובעלי מקצוע", "fb-businesssribak": "בעלי עסקים מדברים שיווק, מיתוג ופרסום", "fb-906278559526141": "הטייקונים: עצמאים, בעלי עסקים וחברות", "fb-1752673784886479": "נשים עסקים והשראה", "fb-freelancerim": "עצמאים בישראל", "fb-954678227994700": "קבלנים שיפוצניקים ויזמים", "fb-1382003495801781": "קבלני ענף הבנייה ושיפוצים - הצעות מחיר ומכרזים", "fb-630235466131695": "ענף הבנייה - קבלנים יזמים ופועלים בכל הארץ", "fb-2210028712553194": "ידע שווה כסף - לי זה עולה יותר", "fb-lazy.investor.israel": "השקעות לעצלנים", "fb-mamreem": "ממריאים לחופש כלכלי", "fb-mashkanta1": "משכנתא בישראל - הפורום הגדול ברשת", "fb-israel.passive.investors": "להשקיע נכון - קהילת המשקיעים הפאסיביים", "fb-httpspln.co.il": "משכנתא - קבוצת התייעצות ומידע", "fb-333238607094709": "משכנתא - קבוצה להתייעצות, שאלות ותשובות", "fb-287300104753932": "תשאל סוכן ביטוח", "fb-2889221661094581": "כלכלת משפחה - משתפים, מתייעצים וצומחים יחד", "fb-577276059281790": "טיפים בנושא פיננסים, חופש כלכלי, חסכונות", "fb-inurance": "שאלות ותשובות - הכל על ביטוח", "fb-savey": "שאלות ותשובות על פנסיה, ביטוח וחיסכון", "fb-284562504944889": "פרישה | פנסיה | פיצויים | כלכלת פרישה", "fb-bahitech": "משכורות בהייטקס", "fb-hitechproblems": "צרות בהייטק - הקבוצה", "fb-israel.hightech": "משרות הייטק בין חברים", "fb-926122620829127": "משרות הייטק שוות", "fb-609641652802760": "משרות בהייטק ובסטארט אפים", "fb-569017689842159": "מנהלי מוצר ישראל - Product Managers Israel", "fb-439327062818235": "הדיגיטליים: מעצבים, מפתחים ומשווקים", "fb-MoneyTalksIL": "מדברים על כסף - השקעות, פנסיה, שוק ההון", "fb-396641690362272": "מפתחים בישראל - R&D Israel", "fb-qablog": "בדיקות תוכנה QA", "fb-109092007206966": "משרות פרודקט בין חברים", "fb-527371684110657": "קהילת בודקי תוכנה (QA) בישראל", "fb-making.software": "עושים תוכנה - קהילת מפתחים ומפתחות", "fb-904079522941454": "מפתחים מחוץ לקופסה", "fb-1866682600754410": "יאללה, הייטקיסטיות!", "fb-5823469073": "הייטק בישראל", "fb-1609078399328679": "פרסום חינם שדרות נתיבות קרית גת אופקים אשקלון", "fb-1227634734279389": "קרית-גת העיר שלנו", "wa-atzmaim": "וואטסאפ עצמאים", "wa-hitech": "וואטסאפ הייטק", "ישיר": "כניסה ישירה"};
+function srcName(c){if(!c)return'';return SRCMAP[c]||String(c).replace(/^בדיקה-/,'בדיקה: ');}
+function fixVal(v){if(typeof v==='string'&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(v)){const d=new Date(v);return d.getDate()+'-'+(d.getMonth()+1);}return v;}
+const SHORT={'נשוי/אה או בזוגיות':'בזוגיות','גרוש/ה או אלמן/ה':'גרוש/ה','עצמאי/ת, עוסק מורשה':'עוסק מורשה','עצמאי/ת, עוסק פטור':'עוסק פטור','בעל/ת חברה בע"מ':'בעל/ת חברה','לא עובד/ת כרגע':'לא עובד/ת','עד 8,000 ₪':'עד 8K','8,000-15,000 ₪':'8K-15K','15,000-25,000 ₪':'15K-25K','מעל 25,000 ₪':'מעל 25K','מעדיף/ה לא לענות':''};
+const sh=v=>SHORT[v]!=null?SHORT[v]:v;
+const WA_SVG='<svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg>';
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2200);}
 function ago(iso){if(!iso)return'';const d=new Date(iso),m=(Date.now()-d)/60000;if(m<1)return'עכשיו';if(m<60)return'לפני '+Math.round(m)+' דק\'';const h=m/60;if(h<24)return'לפני '+Math.round(h)+' שע\'';const dd=Math.round(h/24);if(dd<8)return dd===1?'אתמול':'לפני '+dd+' ימים';return d.toLocaleDateString('he-IL');}
 function digits(p){return String(p||'').replace(/\D/g,'');}
@@ -162,7 +186,7 @@ function weekStart(){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate(
 function load(){
   const rb=$('#refresh'); rb.classList.add('busy'); rb.textContent='טוען...';
   if(!D) $('#app').innerHTML='<div class="load"><div><div class="spin"></div>טוען לידים...</div></div>';
-  google.script.run.withSuccessHandler(d=>{ rb.classList.remove('busy'); rb.textContent='רענון'; if(d.error){$('#app').innerHTML='<div class="empty">'+esc(d.error)+'</div>';return;} const first=!D; D=d; $('#sheet').href=d.url; if(first||!$('.kpis')) render(); else {chrome(); body(); toast('עודכן');} })
+  google.script.run.withSuccessHandler(d=>{ rb.classList.remove('busy'); rb.textContent='רענון'; if(d.error){$('#app').innerHTML='<div class="empty">'+esc(d.error)+'</div>';return;} const first=!D; ['crm','low','elem'].forEach(t=>(d[t]||[]).forEach(r=>Object.keys(r).forEach(k=>{if(k!=='תאריך')r[k]=fixVal(r[k]);}))); D=d; $('#sheet').href=d.url; if(first||!$('.kpis')) render(); else {chrome(); body(); toast('עודכן');} })
     .withFailureHandler(e=>{rb.classList.remove('busy'); rb.textContent='רענון'; if(!D) $('#app').innerHTML='<div class="empty">לא הצלחתי לטעון: '+esc(e.message)+'</div>'; else toast('לא הצלחתי לרענן');}).getData();
 }
 
@@ -217,7 +241,7 @@ function body(){
      <input id="q" type="search" placeholder="חיפוש שם, טלפון, עיר, הערה" value="${esc(q)}">
      ${tab==='crm'?['הכל','מתאים','לבדיקה','B2B'].map(x=>`<button class="chip ${fFit===x?'on':''}" data-fit="${x}">${x}</button>`).join(''):''}
      <select id="fs"><option value="">כל הסטטוסים</option>${sts.map(s=>`<option ${fStatus===s?'selected':''}>${esc(s)}</option>`).join('')}</select>
-     <select id="fsrc"><option value="">כל המקורות</option>${srcs.map(s=>`<option ${fSrc===s?'selected':''}>${esc(s)}</option>`).join('')}</select>
+     <select id="fsrc"><option value="">כל המקורות</option>${srcs.map(s=>`<option value="${esc(s)}" ${fSrc===s?'selected':''}>${esc(srcName(s))}</option>`).join('')}</select>
      <div class="view" role="group" aria-label="תצוגה"><button type="button" data-v="cards">כרטיסים</button><button type="button" data-v="list">רשימה</button></div>
    </div>
    ${tab==='low'?'<p class="note">מי שסונן כלא מתאים לאורנה. לא נשלח מייל. אם בכל זאת מתאים, משנים סטטוס ומטפלים.</p>':''}
@@ -259,7 +283,7 @@ function list(all){
   if(view==='list'){
     el.className='tw fadein';
     const crmT=tab!=='elem';
-    el.innerHTML=`<table class="lt">${crmT?'<colgroup><col style="width:17%"><col style="width:8%"><col style="width:13%"><col style="width:24%"><col style="width:11%"><col style="width:8%"><col style="width:11%"><col style="width:8%"></colgroup>':'<colgroup><col style="width:20%"><col style="width:14%"><col style="width:26%"><col style="width:12%"><col style="width:8%"><col style="width:12%"><col style="width:8%"></colgroup>'}<thead><tr><th>שם</th>${crmT?'<th>התאמה</th><th>מצב</th>':'<th>מה לבטח</th>'}<th>פרטים עיקריים</th><th>מקור</th><th>מתי</th><th>סטטוס</th><th></th></tr></thead><tbody>${rows.map(rowHtml).join('')}</tbody></table>`;
+    el.innerHTML=`<table class="lt">${crmT?'<colgroup><col style=\"width:16%\"><col style=\"width:8%\"><col style=\"width:12%\"><col style=\"width:20%\"><col style=\"width:11%\"><col style=\"width:8%\"><col style=\"width:14%\"><col style=\"width:11%\"></colgroup>':'<colgroup><col style=\"width:20%\"><col style=\"width:14%\"><col style=\"width:22%\"><col style=\"width:12%\"><col style=\"width:8%\"><col style=\"width:13%\"><col style=\"width:11%\"></colgroup>'}<thead><tr><th>שם</th>${crmT?'<th>התאמה</th><th>מצב בבדיקה</th>':'<th>מה לבטח</th>'}<th>פרטים</th><th>מקור</th><th>נכנס</th><th>סטטוס</th><th>פעולות</th></tr></thead><tbody>${rows.map(rowHtml).join('')}</tbody></table>`;
   } else { el.className='list fadein'; el.innerHTML=rows.map(card).join(''); }
   el.querySelectorAll('[data-row]').forEach(c=>{
     const r=rows.find(x=>x._row==c.dataset.row);
@@ -272,9 +296,10 @@ function bits(r){
   const lvl=r['מצב בבדיקה']||'', lc=/בהקדם/.test(lvl)?'red':/לשפר/.test(lvl)?'mid':lvl?'ok':'';
   const sts=tab==='elem'?ELEM_ST:STATUSES;
   const fitB=tab!=='elem'&&fit?`<span class="b ${fit==='מתאים'?'matim':fit==='לבדיקה'?'livdika':'low'}">${esc(fit)}</span>`:'';
-  const lvlB=lc?`<span class="b ${lc}">${esc(lvl)}</span>`:'';
+  const lvlB=lc?`<span class="b ${lc}" title="${esc(lvl)}">${esc(lvl.replace('כדאי לבדוק בהקדם','לבדוק בהקדם').replace('יש מה לשפר','יש מה לשפר').replace('נראה שאת/ה במצב טוב','במצב טוב'))}</span>`:'';
+  const kids=r['ילדים']&&r['ילדים']!=='אין'?r['ילדים']+' ילדים':'';
   const summary=tab==='elem'?[r['מה לבטח'],r['עיר']].filter(Boolean).join(' · '):
-    [r['גיל']&&('גיל '+r['גיל']),[r['מצב משפחתי'],r['ילדים']&&r['ילדים']!=='אין'?r['ילדים']+' ילדים':''].filter(Boolean).join(', '),r['תעסוקה'],r['הכנסה'],r['זמן נוח']&&('נוח: '+r['זמן נוח'])].filter(Boolean).join(' · ');
+    [r['גיל']&&('גיל '+r['גיל']),[sh(r['מצב משפחתי']),kids].filter(Boolean).join(', '),sh(r['תעסוקה']),sh(r['הכנסה'])].filter(Boolean).join(' · ');
   const sel=`<select class="st" data-s="${esc(r['סטטוס'])}" aria-label="סטטוס">${sts.map(s=>`<option ${r['סטטוס']===s?'selected':''}>${esc(s)}</option>`).join('')}</select>`;
   return {fit,cls,fitB,lvlB,summary,sel};
 }
@@ -282,13 +307,13 @@ function card(r){
   const x=bits(r);
   return `<article class="card ${x.cls}" data-row="${r._row}">
     <div class="row1"><h3 title="${esc(r['שם'])}">${esc(r['שם'])}</h3><span class="ago" title="${esc(new Date(r['תאריך']).toLocaleString('he-IL'))}">${ago(r['תאריך'])}</span></div>
-    <div class="badges">${x.fitB}${x.lvlB}${isB2B(r)?'<span class="b b2b">מעסיק עובדים</span>':''}${r['השאיר אחרי תוצאה טובה']==='כן'?'<span class="b">השאיר אחרי תוצאה טובה</span>':''}${r['מקור']?`<span class="b">${esc(r['מקור'])}</span>`:''}</div>
+    <div class="badges">${x.fitB}${x.lvlB}${isB2B(r)?'<span class="b b2b">מעסיק עובדים</span>':''}${r['השאיר אחרי תוצאה טובה']==='כן'?'<span class="b">השאיר אחרי תוצאה טובה</span>':''}${r['מקור']?`<span class="b" title="${esc(r['מקור'])}">${esc(srcName(r['מקור']))}</span>`:''}</div>
     <div class="facts main">${esc(x.summary)}</div>
     <div class="acts">
-      <a class="btn wa" href="${waLink(r)}" target="_blank" rel="noopener">וואטסאפ</a>
+      <a class="btn wa" href="${waLink(r)}" target="_blank" rel="noopener">${WA_SVG} וואטסאפ</a>
       <a class="btn call" href="tel:${digits(r['טלפון'])}" title="${esc(r['טלפון'])}">חיוג</a>
       ${x.sel}
-      <button class="btn more" type="button">פרטים</button>
+      <button class="btn ghost more" type="button">פרטים</button>
     </div>
   </article>`;
 }
@@ -298,10 +323,10 @@ function rowHtml(r){
     <td class="nm" title="${esc(r['שם'])}">${esc(r['שם'])}${isB2B(r)?' <span class="b b2b" style="font-size:11px;padding:1px 6px">B2B</span>':''}<small>${esc(r['טלפון'])}</small></td>
     ${tab!=='elem'?`<td>${x.fitB}</td><td>${x.lvlB}</td>`:`<td>${esc(r['מה לבטח']||'')}</td>`}
     <td class="sm" title="${esc(x.summary)}">${esc(x.summary)}</td>
-    <td>${r['מקור']?`<span class="b">${esc(r['מקור'])}</span>`:''}</td>
+    <td class="src" title="${esc(r['מקור']||'')}">${esc(srcName(r['מקור']))}</td>
     <td title="${esc(new Date(r['תאריך']).toLocaleString('he-IL'))}">${ago(r['תאריך'])}</td>
     <td>${x.sel}</td>
-    <td><div class="acts"><a class="btn wa" href="${waLink(r)}" target="_blank" rel="noopener" title="וואטסאפ" aria-label="וואטסאפ">WA</a><button class="btn more" type="button">פרטים</button></div></td>
+    <td><div class="acts"><a class="btn ic wa" href="${waLink(r)}" target="_blank" rel="noopener" title="וואטסאפ" aria-label="וואטסאפ">${WA_SVG}</a><button class="btn ghost more" type="button">פרטים</button></div></td>
   </tr>`;
 }
 function details(r){
@@ -339,7 +364,7 @@ function measure(){
   const pct=(a,b)=>b?Math.round(a/b*100)+'%':'-';
   $('#body').innerHTML=`<p class="note fadein">מקור = הערך של ?src= בקישור שפורסם. כך רואים איזו קבוצה מביאה לידים, ואיפה אנשים נעצרים.</p>
    ${rows.length?`<div style="overflow-x:auto"><table class="m"><thead><tr><th>מקור</th><th>התחילו</th><th>הגיעו לתוצאה</th><th>מרוצים מהסוכן</th><th>אלמנטרי</th><th>השאירו פרטים</th><th>מתאימים</th><th>המרה</th></tr></thead><tbody>
-   ${rows.map(([s,v])=>`<tr><td>${esc(s)}</td><td>${v.start}</td><td>${v.result}</td><td>${v.redline}</td><td>${v.elementary}</td><td>${v.leads}</td><td>${v.matim}</td><td>${pct(v.leads,v.start)}</td></tr>`).join('')}
+   ${rows.map(([s,v])=>`<tr><td title="${esc(s)}">${esc(srcName(s))}</td><td>${v.start}</td><td>${v.result}</td><td>${v.redline}</td><td>${v.elementary}</td><td>${v.leads}</td><td>${v.matim}</td><td>${pct(v.leads,v.start)}</td></tr>`).join('')}
    </tbody></table></div>`:'<div class="empty">עוד אין נתונים</div>'}`;
 }
 $('#refresh').onclick=load;
