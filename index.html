@@ -110,7 +110,8 @@ dialog::backdrop{background:rgba(20,26,60,.55)}
 .nest-r+.nest-r{margin-top:10px}
 .nest-l{display:block;font-size:15px;font-weight:600;color:var(--navy);margin-bottom:6px}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
-.chip{flex:1 1 0;min-width:0;white-space:nowrap;min-height:44px;padding:8px 6px;border:1.5px solid var(--line);border-radius:999px;background:#fff;font:inherit;font-size:14.5px;cursor:pointer;color:var(--navy)}
+@media (max-width:340px){.chip{font-size:13px}.chips{gap:6px}.nest{margin-left:0;padding:10px 8px}}
+.chip{flex:1 1 0;min-width:0;white-space:nowrap;min-height:44px;padding:8px 4px;border:1.5px solid var(--line);border-radius:999px;background:#fff;font:inherit;font-size:14.5px;cursor:pointer;color:var(--navy)}
 .chip[aria-checked="true"]{border-color:var(--violet);background:var(--grad);color:#fff;font-weight:600}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -187,6 +188,15 @@ function isSelf(a){return wk(a,"עוסק פטור")||wk(a,"עוסק מורשה")
 function onlyNoWork(a){return wk(a,"לא עובד/ת כרגע")}
 function has(a,x){return (a.has||[]).includes(x)}
 const visibleQ = () => Q.filter(q => !q.when || q.when(A));
+// מוחק תשובות לשאלות שכבר לא רלוונטיות (למשל אחרי חזרה ושינוי תשובה)
+function prune(a){
+  Q.forEach(q=>{
+    const on = !q.when || q.when(a);
+    if (!on){ delete a[q.id]; [q.sub,q.sub2].forEach(s=>s&&delete a[s.id]); if(q.inline){ delete a.biz; } return; }
+    [q.sub,q.sub2].forEach(s=>{ if(s && (a[q.id]===undefined || (s.when && !s.when(a)))) delete a[s.id]; });
+    if (q.inline) bizSummary(a);
+  });
+}
 
 /* ===== מסכים ===== */
 function show(html, focusSel){
@@ -371,7 +381,7 @@ function redline(){
 
 /* ===== רק אלמנטרי ===== */
 function elementary(){
-  path.push(elementary);
+  path.push(elementary); R = null;
   show(`
     <h2>ביטוח רכב, דירה ועסק אנחנו לא עושים</h2>
     <p class="lead">אנחנו מתמחים בפנסיה, ביטוחי בריאות וחיים וחיסכון. אבל יש לנו סוכן ביטוח אלמנטרי מהימן שעובד איתנו, ואפשר להעביר אליו את הפרטים.</p>
@@ -433,7 +443,7 @@ function fit(a){
 let R=null;
 let ctaObs=null;
 function result(){
-  R = score(A); track("result");
+  prune(A); R = score(A); track("result");
   path.push(result);
   const L = {red:["כדאי לבדוק בהקדם","b-red"], mid:["יש כמה דברים לשפר","b-mid"], ok:["נראה שאת/ה במצב טוב","b-ok"]}[R.level];
   const pos = Math.round(8 + Math.min(R.total,10)*8.4);   // מיקום לפי הציון: ימין = מצב טוב, שמאל = כדאי לבדוק
@@ -441,7 +451,7 @@ function result(){
   const strong = R.level!=="ok";
   show(`
     <span class="badge ${L[1]}">${L[0]}</span>
-    <h2 style="margin-top:12px">${strong?`מצאנו ${R.finds.length} דברים ששווה לבדוק`:"התמונה הכללית טובה"}</h2>
+    <h2 style="margin-top:12px">${strong?(R.finds.length===1?"מצאנו דבר אחד ששווה לבדוק":`מצאנו ${R.finds.length} דברים ששווה לבדוק`):"התמונה הכללית טובה"}</h2>
     <div class="meter" role="img" aria-label="מצב: ${L[0]}"><b style="right:${pos}%"></b></div>
     <div class="meter-l"><span>במצב טוב</span><span>כדאי לבדוק</span></div>
     ${top.length?`<ul class="finds">${top.map(x=>`<li><span><b>${esc(x[1])}</b>${esc(x[2])}</span></li>`).join("")}</ul>`:""}
@@ -469,6 +479,7 @@ function result(){
   else document.getElementById("soft").onclick = () => {
     document.getElementById("softBox").innerHTML = leadForm("soft");
     bindForm("soft"); document.getElementById("soft").remove();
+    const st=document.getElementById("stick"); st.classList.add("hide"); st.hidden=true; if(ctaObs) ctaObs.disconnect();
     document.querySelector("#f_soft input[name=name]").focus();
   };
 }
@@ -498,7 +509,8 @@ function leadForm(kind){
 function bindForm(kind){
   const f = document.getElementById("f_"+kind);
   const sb=f.querySelector('button[type=submit]'), hint=f.querySelector('.need-ok');
-  const syncOk=()=>{sb.disabled=!f.consent.checked; if(hint) hint.style.display=f.consent.checked?'none':'';};
+  let sending=false;
+  const syncOk=()=>{ if(sending) return; sb.disabled=!f.consent.checked; if(hint) hint.style.display=f.consent.checked?'none':'';};
   f.consent.addEventListener('change',syncOk); syncOk();
   f.name.addEventListener('blur',()=>{ if(f.name.value.trim()) setErr(f.name,"e_n_"+kind,nameErr(f.name.value)); });
   f.phone.addEventListener('blur',()=>{ const v=f.phone.value.trim(); if(!v) return; const ph=normPhone(v); setErr(f.phone,"e_p_"+kind, ph?"":"צריך מספר נייד תקין, למשל 050-8123456"); if(ph) f.phone.value=ph; });
@@ -516,7 +528,8 @@ function bindForm(kind){
     document.getElementById("e_x_"+kind).textContent = !f.consent.checked ? (bad=true,"צריך לסמן אישור כדי שנוכל לחזור אליך") : "";
     if (bad) return;
     if (f.website.value) return thanks(kind, name); // בוט
-    const btn=f.querySelector("button[type=submit]"); btn.disabled=true; btn.textContent="שולח...";
+    if (sending) return;
+    const btn=f.querySelector("button[type=submit]"); sending=true; btn.disabled=true; btn.textContent="שולח...";
     const F = kind==="elem" ? {fit:"אלמנטרי", why:""} : fit(A);
     const payload = {
       kind: kind==="elem" ? "elementary" : "lead",
@@ -528,13 +541,14 @@ function bindForm(kind){
       fit:F.fit, fitWhy:F.why, ua:navigator.userAgent.slice(0,120)
     };
     try { await send(payload); track("lead_"+(kind==="elem"?"elem":F.fit)); thanks(kind, name); }
-    catch(err){ btn.disabled=false; btn.textContent="לנסות שוב"; document.getElementById("e_x_"+kind).textContent="משהו לא עבד בשליחה. אפשר לנסות שוב."; }
+    catch(err){ sending=false; btn.disabled=!f.consent.checked; btn.textContent="לנסות שוב"; document.getElementById("e_x_"+kind).textContent="משהו לא עבד בשליחה. אפשר לנסות שוב."; }
   };
 }
 function setErr(input,id,msg){input.setAttribute("aria-invalid",msg?"true":"false");document.getElementById(id).textContent=msg;}
 function normPhone(p){
-  let d=String(p).replace(/[^\d+]/g,"");
-  if (d.startsWith("+972")) d="0"+d.slice(4); else if (d.startsWith("972")) d="0"+d.slice(3);
+  let d=String(p).replace(/\(0\)/g,"").replace(/[^\d+]/g,"");
+  if (d.startsWith("00972")) d="0"+d.slice(5); else if (d.startsWith("+972")) d="0"+d.slice(4); else if (d.startsWith("972")) d="0"+d.slice(3);
+  if (d.startsWith("00")) d=d.slice(1);
   if (!/^05\d{8}$/.test(d)) return "";
   const t=d.slice(3);
   if (/^(\d)\1{6}$/.test(t) || t==="1234567" || t==="7654321") return ""; // מספר פיקטיבי
@@ -544,8 +558,8 @@ function nameErr(n){
   n=n.trim();
   if (!n) return "צריך שם";
   if (/\d/.test(n)) return "שם בלי ספרות, בבקשה";
-  if (!/^[\u0590-\u05FFa-zA-Z][\u0590-\u05FFa-zA-Z '\-\.׳"]*$/.test(n)) return "רק אותיות בשם, בבקשה";
-  if ((n.match(/[\u0590-\u05FFa-zA-Z]/g)||[]).length<2 || /^(.)\1+$/.test(n.replace(/\s/g,""))) return "צריך שם מלא יותר";
+  if (!/^\p{L}[\p{L}\p{M} '\-\.׳״"]*$/u.test(n)) return "רק אותיות בשם, בבקשה";
+  if ((n.match(/\p{L}/gu)||[]).length<2 || /^(.)\1+$/.test(n.replace(/\s/g,""))) return "צריך שם מלא יותר";
   return "";
 }
 async function send(payload){

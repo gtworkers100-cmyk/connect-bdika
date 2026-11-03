@@ -13,6 +13,10 @@
 :root{--navy:#222C5F;--ink:#1B2350;--muted:#5B6488;--bg:#F3F4F9;--card:#fff;--line:#E3E6F0;--teal:#00D9C5;--teal-d:#00A99A;--magenta:#D94BEA;--violet:#7A3FC0;--grad:linear-gradient(120deg,#D94BEA,#7A3FC0 45%,#00D9C5);--warn:#C2338F;--ok:#0E9C8C;--amber:#B7791F}
 *{box-sizing:border-box}
 html,body{margin:0}
+html,body{overflow-x:hidden}
+.bar select{max-width:100%;min-width:0}
+.list>*{min-width:0}.card{min-width:0}.card h3{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+@media (max-width:420px){.list{grid-template-columns:minmax(0,1fr)}.hwrap{gap:8px;flex-wrap:wrap}.hwrap img{height:32px}.hbtn{padding:6px 9px;font-size:13px}}
 body{font-family:Heebo,system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5;-webkit-tap-highlight-color:transparent}
 button,input,select,textarea{font:inherit;color:inherit}
 header{background:var(--navy);color:#fff;padding:14px 16px 56px;position:relative;overflow:hidden}
@@ -283,6 +287,7 @@ function render(){
   </div>
   <div id="body"></div>`;
   $('#app').innerHTML=html;
+  document.querySelectorAll('.kpi').forEach(e=>e.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();e.click();}});
   document.querySelectorAll('.kpi').forEach(e=>e.onclick=()=>{kpiF=kpiF===e.dataset.k?'':e.dataset.k;const was=tab;tab='crm';chrome();if(was!=='crm')body();else list(rowsFor('crm'));});
   document.querySelectorAll('.tab').forEach(e=>e.onclick=()=>{if(tab===e.dataset.t)return;tab=e.dataset.t;kpiF='';fStatus='';fSrc='';chrome();body();});
   body();
@@ -360,7 +365,7 @@ function list(all){
   el.querySelectorAll('[data-row]').forEach(c=>{
     const r=rows.find(x=>x._row==c.dataset.row);
     c.querySelector('.more').onclick=()=>details(r);
-    c.querySelector('select.st').onchange=e=>{e.target.dataset.s=e.target.value;save(r,{'סטטוס':e.target.value},c);};
+    c.querySelector('select.st').onchange=e=>{const sel=e.target,old=r['סטטוס']||'';sel.dataset.s=sel.value;save(r,{'סטטוס':sel.value},c,null,()=>{sel.value=old;sel.dataset.s=old;});};
   });
 }
 function bits(r){
@@ -401,7 +406,7 @@ function rowHtml(r){
     <td class="nm"><div class="who"><span class="av ${x.cls}">${esc(initials(r['שם']))}</span><div class="wn"><b title="${esc(r['שם'])}">${esc(r['שם'])}</b><small dir="ltr">${esc(r['טלפון'])}</small></div>${isB2B(r)?'<span class="b b2b mini">B2B</span>':''}</div></td>
     ${tab!=='elem'?`<td class="c">${x.fitB||'<span class="dash">-</span>'}</td><td class="c">${x.lvlB||'<span class="dash">-</span>'}</td><td class="c"><div class="chs" title="${esc(x.summary)}">${chips(r)}</div></td>`:`<td class="c">${esc(r['מה לבטח']||'-')}</td><td class="c">${esc(r['עיר']||'-')}</td>`}
     <td class="c src" title="${esc(r['מקור']||'')}">${esc(srcName(r['מקור'])||'-')}</td>
-    <td class="c tm" title="${esc(d.toLocaleString('he-IL'))}"><b>${ago(r['תאריך'])}</b><small>${d.toLocaleDateString('he-IL',{day:'numeric',month:'numeric'})}</small></td>
+    <td class="c tm" title="${isNaN(d)?'':esc(d.toLocaleString('he-IL'))}"><b>${ago(r['תאריך'])}</b><small>${isNaN(d)?'':d.toLocaleDateString('he-IL',{day:'numeric',month:'numeric'})}</small></td>
     <td class="c">${x.sel}</td>
     <td class="c"><div class="acts"><a class="btn ic wa" href="${waLink(r)}" target="_blank" rel="noopener" title="וואטסאפ" aria-label="וואטסאפ">${WA_SVG}</a><button class="btn ghost more" type="button">פרטים</button></div></td>
   </tr>`;
@@ -424,12 +429,12 @@ function details(r){
   d.querySelector('.save').onclick=()=>{const ch={'הערות':d.querySelector('.notes').value};const m=d.querySelector('.meet');if(m)ch['תאריך פגישה']=m.value?m.value.replace('T',' '):'';save(r,ch,null,()=>d.close());};
   d.showModal();
 }
-function save(r,ch,c,done){
+function save(r,ch,c,done,fail){
   api({kind:'crm_update',tab,row:r._row,phone:r['טלפון'],changes:ch}).then(res=>{
-    if(!res.ok){toast(res.error==='auth'?'צריך להיכנס מחדש':(res.error||'השמירה נכשלה'));return;}
+    if(!res.ok){toast(res.error==='auth'?'צריך להיכנס מחדש':(res.error||'השמירה נכשלה'));if(fail)fail();return;}
     Object.assign(r,ch); toast('נשמר'); if(done)done();
     if(c&&'סטטוס' in ch){ const stillOk=filt([r]).length; if(!stillOk){c.style.transition='opacity .25s,transform .25s';c.style.opacity='0';c.style.transform='scale(.97)';setTimeout(()=>c.remove(),260);} chrome(); }
-  }).catch(()=>toast('השמירה נכשלה. בדקו חיבור.'));
+  }).catch(()=>{toast('השמירה נכשלה. בדקו חיבור.');if(fail)fail();});
 }
 function measure(){
   const S={};
