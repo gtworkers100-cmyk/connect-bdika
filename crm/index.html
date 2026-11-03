@@ -438,15 +438,15 @@ function save(r,ch,c,done,fail){
 }
 function measure(){
   const S={};
-  const add=(src,k)=>{src=src||'ישיר';S[src]=S[src]||{start:0,result:0,redline:0,elementary:0,leads:0,matim:0};S[src][k]++;};
-  D.ev.forEach(e=>{const ev=e['אירוע'];if(ev==='start'||ev==='result'||ev==='redline'||ev==='elementary')add(e['מקור'],ev);});
+  const add=(src,k)=>{src=src||'ישיר';S[src]=S[src]||{view:0,start:0,result:0,redline:0,elementary:0,leads:0,matim:0};S[src][k]++;};
+  D.ev.forEach(e=>{const ev=e['אירוע'];if(ev==='view'||ev==='start'||ev==='result'||ev==='redline'||ev==='elementary')add(e['מקור'],ev);});
   D.crm.forEach(r=>{add(r['מקור'],'leads');if(r['התאמה']==='מתאים')add(r['מקור'],'matim');});
   D.low.forEach(r=>add(r['מקור'],'leads'));
-  const rows=Object.entries(S).sort((a,b)=>b[1].leads-a[1].leads||b[1].start-a[1].start);
+  const rows=Object.entries(S).sort((a,b)=>b[1].leads-a[1].leads||b[1].view-a[1].view||b[1].start-a[1].start);
   const pct=(a,b)=>b?Math.round(a/b*100)+'%':'-';
   $('#body').innerHTML=`<p class="note fadein">מקור = הערך של ?src= בקישור שפורסם. כך רואים איזו קבוצה מביאה לידים, ואיפה אנשים נעצרים.</p>
-   ${rows.length?`<div style="overflow-x:auto"><table class="m"><thead><tr><th>מקור</th><th>התחילו</th><th>הגיעו לתוצאה</th><th>מרוצים מהסוכן</th><th>אלמנטרי</th><th>השאירו פרטים</th><th>מתאימים</th><th>המרה</th></tr></thead><tbody>
-   ${rows.map(([s,v])=>`<tr><td title="${esc(s)}">${esc(srcName(s))}</td><td>${v.start}</td><td>${v.result}</td><td>${v.redline}</td><td>${v.elementary}</td><td>${v.leads}</td><td>${v.matim}</td><td>${pct(v.leads,v.start)}</td></tr>`).join('')}
+   ${rows.length?`<div style="overflow-x:auto"><table class="m"><thead><tr><th>מקור</th><th>נכנסו לאתר</th><th>התחילו</th><th>הגיעו לתוצאה</th><th>מרוצים מהסוכן</th><th>אלמנטרי</th><th>השאירו פרטים</th><th>מתאימים</th><th>המרה (מהתחלה)</th></tr></thead><tbody>
+   ${rows.map(([s,v])=>`<tr><td title="${esc(s)}">${esc(srcName(s))}</td><td>${v.view}</td><td>${v.start}</td><td>${v.result}</td><td>${v.redline}</td><td>${v.elementary}</td><td>${v.leads}</td><td>${v.matim}</td><td>${pct(v.leads,v.start)}</td></tr>`).join('')}
    </tbody></table></div>`:'<div class="empty">עוד אין נתונים</div>'}`;
 }
 $('#refresh').onclick=load;

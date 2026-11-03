@@ -222,6 +222,7 @@ function intro(){
     </div>
     <p class="note">אנחנו מתמחים בפנסיה, ביטוחי בריאות וחיים וחיסכון. ביטוח רכב, דירה ועסק אנחנו לא עושים.</p>
   `);
+  if (!window.__viewed) { window.__viewed=1; track("view"); }
   document.getElementById("go").onclick = () => { track("start"); ask(0); };
 }
 
