@@ -10,6 +10,7 @@
 <meta property="og:image" content="https://gtworkers100-cmyk.github.io/connect-bdika/assets/og.jpg">
 <meta property="og:locale" content="he_IL">
 <meta name="theme-color" content="#222C5F">
+<meta name="color-scheme" content="light dark">
 <link rel="icon" href="assets/icon-32.png">
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -124,6 +125,37 @@ dialog::backdrop{background:rgba(20,26,60,.55)}
 .stick{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(to top,rgba(245,246,250,1) 60%,rgba(245,246,250,0));z-index:20;transition:transform .3s ease,opacity .3s ease}
 .stick .btn{max-width:588px;margin:0 auto;display:flex}
 .stick.hide{transform:translateY(110%);opacity:0;pointer-events:none}
+/* מצב כהה לפי הגדרות הטלפון */
+@media (prefers-color-scheme: dark){
+  :root{--ink:#E8EAF6;--muted:#A3AACB;--bg:#0E1230;--card:#181D45;--line:#323A70;--warn:#F07AC4;--ok:#3FE0CF;--hi:#C9B6FF;--surf:#20265A;--surf2:#262E68}
+  body{color:var(--ink)}
+  .card{box-shadow:0 10px 30px rgba(0,0,0,.45)}
+  .pills li{background:var(--surf);color:var(--ink)}
+  .btn-ghost,.link,.nest-l,.chip{color:var(--ink)}
+  .note{background:#2A1F4D}
+  .bar{background:var(--surf2)}
+  .opt{background:var(--surf);color:var(--ink)}
+  @media (hover:hover){.opt:hover{border-color:#4A538F}}
+  .opt .box{border-color:#6F78AD}
+  .opt[aria-checked="true"],.opt[aria-pressed="true"]{background:#2C2464;border-color:var(--hi)}
+  .actions{background:linear-gradient(to top,var(--card) 70%,rgba(24,29,69,0))}
+  .b-red{background:#3E1C3F;color:#F59AD2}
+  .b-mid{background:#2E2560;color:var(--hi)}
+  .b-ok{background:#123F45;color:var(--ok)}
+  .meter b{background:var(--card);border-color:#fff}
+  .in{background:var(--surf);color:var(--ink)}
+  .in::placeholder{color:#7F87B5}
+  .chk{background:#2C2464}
+  .nest{background:#1F2357;border-right-color:var(--hi)}
+  .chip{background:var(--surf)}
+  .chip[aria-checked="true"]{color:#fff;border-color:var(--hi)}
+  .cta{background:linear-gradient(var(--card),var(--card)) padding-box,var(--grad) border-box;box-shadow:0 12px 30px rgba(0,0,0,.4)}
+  .stick{background:linear-gradient(to top,rgba(14,18,48,1) 60%,rgba(14,18,48,0))}
+  dialog{background:var(--card);color:var(--ink)}
+  .in:focus,.opt:focus-visible,.btn:focus-visible,.link:focus-visible{outline-color:rgba(201,182,255,.55)}
+  .about img{filter:brightness(1.15)}
+  a{color:var(--hi)}
+}
 </style>
 </head>
 <body>
