@@ -10,7 +10,8 @@
 <meta property="og:image" content="https://gtworkers100-cmyk.github.io/connect-bdika/assets/og.jpg">
 <meta property="og:locale" content="he_IL">
 <meta name="theme-color" content="#222C5F">
-<meta name="color-scheme" content="only light">
+<meta name="color-scheme" content="light dark">
+<script>(function(){try{var ua=navigator.userAgent||"",inApp=/FBAN|FBAV|FB_IAB|FBIOS|Instagram|Line\/|; wv\)|WhatsApp/i.test(ua),m=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)"),set=function(){document.documentElement.classList.toggle("dk",inApp||(m&&m.matches));};set();if(m&&m.addEventListener)m.addEventListener("change",set);}catch(e){}})();</script>
 <link rel="icon" href="assets/icon-32.png">
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -125,40 +126,38 @@ dialog::backdrop{background:rgba(20,26,60,.55)}
 .stick{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(to top,rgba(245,246,250,1) 60%,rgba(245,246,250,0));z-index:20;transition:transform .3s ease,opacity .3s ease}
 .stick .btn{max-width:588px;margin:0 auto;display:flex}
 .stick.hide{transform:translateY(110%);opacity:0;pointer-events:none}
-/* מצב כהה לפי הגדרות הטלפון. only light מונע מדפדפנים להחשיך את הדף בכוח */
-:root{color-scheme:only light}
-@media (prefers-color-scheme: dark){
-  :root{color-scheme:dark;--ink:#FFFFFF;--muted:#D2D6EE;--bg:#0B0E26;--card:#161A3D;--line:#454E8C;--warn:#F07AC4;--ok:#3FE0CF;--hi:#C9B6FF;--surf:#20265A;--surf2:#262E68}
-  body{color:var(--ink)}
-  .card{box-shadow:0 10px 30px rgba(0,0,0,.45)}
-  .pills li{background:var(--surf);color:var(--ink)}
-  .btn-ghost,.link,.nest-l,.chip{color:var(--ink)}
-  .note{background:#2A1F4D}
-  .bar{background:var(--surf2)}
-  .opt{background:var(--surf);color:var(--ink);font-weight:500}
-  .fine,.hint,.lead,.step-n,.meter-l{color:var(--muted)}
-  .btn-primary[disabled]{opacity:.55;filter:none}
-  @media (hover:hover){.opt:hover{border-color:#4A538F}}
-  .opt .box{border-color:#6F78AD}
-  .opt[aria-checked="true"],.opt[aria-pressed="true"]{background:#2C2464;border-color:var(--hi)}
-  .actions{background:linear-gradient(to top,var(--card) 70%,rgba(24,29,69,0))}
-  .b-red{background:#3E1C3F;color:#F59AD2}
-  .b-mid{background:#2E2560;color:var(--hi)}
-  .b-ok{background:#123F45;color:var(--ok)}
-  .meter b{background:var(--card);border-color:#fff}
-  .in{background:var(--surf);color:var(--ink)}
-  .in::placeholder{color:#7F87B5}
-  .chk{background:#2C2464}
-  .nest{background:#1F2357;border-right-color:var(--hi)}
-  .chip{background:var(--surf)}
-  .chip[aria-checked="true"]{color:#fff;border-color:var(--hi)}
-  .cta{background:linear-gradient(var(--card),var(--card)) padding-box,var(--grad) border-box;box-shadow:0 12px 30px rgba(0,0,0,.4)}
-  .stick{background:linear-gradient(to top,rgba(14,18,48,1) 60%,rgba(14,18,48,0))}
-  dialog{background:var(--card);color:var(--ink)}
-  .in:focus,.opt:focus-visible,.btn:focus-visible,.link:focus-visible{outline-color:rgba(201,182,255,.55)}
-  .about img{filter:brightness(1.15)}
-  a{color:var(--hi)}
-}
+/* מצב כהה: לפי הטלפון, ותמיד בדפדפן שבתוך אפליקציות (פייסבוק, אינסטגרם) שמחשיכים דפים בכוח */
+html.dk .grad-text{background:none;color:#C9B6FF}
+html.dk{color-scheme:dark;--ink:#FFFFFF;--muted:#D2D6EE;--bg:#0B0E26;--card:#161A3D;--line:#454E8C;--warn:#F07AC4;--ok:#3FE0CF;--hi:#C9B6FF;--surf:#20265A;--surf2:#262E68}
+html.dk body{color:var(--ink)}
+html.dk .card{box-shadow:0 10px 30px rgba(0,0,0,.45)}
+html.dk .pills li{background:var(--surf);color:var(--ink)}
+html.dk .btn-ghost,html.dk .link,html.dk .nest-l,html.dk .chip{color:var(--ink)}
+html.dk .note{background:#2A1F4D}
+html.dk .bar{background:var(--surf2)}
+html.dk .opt{background:var(--surf);color:var(--ink);font-weight:500}
+html.dk .fine,html.dk .hint,html.dk .lead,html.dk .step-n,html.dk .meter-l{color:var(--muted)}
+html.dk .btn-primary[disabled]{opacity:.55;filter:none}
+@media (hover:hover){html.dk .opt:hover{border-color:#4A538F}}
+html.dk .opt .box{border-color:#6F78AD}
+html.dk .opt[aria-checked="true"],html.dk .opt[aria-pressed="true"]{background:#2C2464;border-color:var(--hi)}
+html.dk .actions{background:linear-gradient(to top,var(--card) 70%,rgba(24,29,69,0))}
+html.dk .b-red{background:#3E1C3F;color:#F59AD2}
+html.dk .b-mid{background:#2E2560;color:var(--hi)}
+html.dk .b-ok{background:#123F45;color:var(--ok)}
+html.dk .meter b{background:var(--card);border-color:#fff}
+html.dk .in{background:var(--surf);color:var(--ink)}
+html.dk .in::placeholder{color:#7F87B5}
+html.dk .chk{background:#2C2464}
+html.dk .nest{background:#1F2357;border-right-color:var(--hi)}
+html.dk .chip{background:var(--surf)}
+html.dk .chip[aria-checked="true"]{background:var(--grad);color:#fff;border-color:var(--hi)}
+html.dk .cta{background:linear-gradient(var(--card),var(--card)) padding-box,var(--grad) border-box;box-shadow:0 12px 30px rgba(0,0,0,.4)}
+html.dk .stick{background:linear-gradient(to top,rgba(14,18,48,1) 60%,rgba(14,18,48,0))}
+html.dk dialog{background:var(--card);color:var(--ink)}
+html.dk .in:focus,html.dk .opt:focus-visible,html.dk .btn:focus-visible,html.dk .link:focus-visible{outline-color:rgba(201,182,255,.55)}
+html.dk .about img{filter:brightness(1.15)}
+html.dk a{color:var(--hi)}
 </style>
 </head>
 <body>
