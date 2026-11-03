@@ -10,7 +10,7 @@
 <meta property="og:image" content="https://gtworkers100-cmyk.github.io/connect-bdika/assets/og.jpg">
 <meta property="og:locale" content="he_IL">
 <meta name="theme-color" content="#222C5F">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="only light">
 <link rel="icon" href="assets/icon-32.png">
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -125,9 +125,10 @@ dialog::backdrop{background:rgba(20,26,60,.55)}
 .stick{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(to top,rgba(245,246,250,1) 60%,rgba(245,246,250,0));z-index:20;transition:transform .3s ease,opacity .3s ease}
 .stick .btn{max-width:588px;margin:0 auto;display:flex}
 .stick.hide{transform:translateY(110%);opacity:0;pointer-events:none}
-/* מצב כהה לפי הגדרות הטלפון */
+/* מצב כהה לפי הגדרות הטלפון. only light מונע מדפדפנים להחשיך את הדף בכוח */
+:root{color-scheme:only light}
 @media (prefers-color-scheme: dark){
-  :root{--ink:#FFFFFF;--muted:#D2D6EE;--bg:#0B0E26;--card:#161A3D;--line:#454E8C;--warn:#F07AC4;--ok:#3FE0CF;--hi:#C9B6FF;--surf:#20265A;--surf2:#262E68}
+  :root{color-scheme:dark;--ink:#FFFFFF;--muted:#D2D6EE;--bg:#0B0E26;--card:#161A3D;--line:#454E8C;--warn:#F07AC4;--ok:#3FE0CF;--hi:#C9B6FF;--surf:#20265A;--surf2:#262E68}
   body{color:var(--ink)}
   .card{box-shadow:0 10px 30px rgba(0,0,0,.45)}
   .pills li{background:var(--surf);color:var(--ink)}
