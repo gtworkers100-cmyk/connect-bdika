@@ -65,7 +65,7 @@ p{margin:0 0 12px}
 .opt .box{width:22px;height:22px;border-radius:50%;border:2px solid #B9BED6;flex:none;display:grid;place-items:center}
 .opt.multi .box{border-radius:6px}
 .opt[aria-checked="true"],.opt[aria-pressed="true"]{border-color:var(--violet);background:#F7F2FD}
-.opt[aria-checked="true"] .box,.opt[aria-pressed="true"] .box{border-color:transparent;background:var(--grad)}
+.opt[aria-checked="true"] .box,.opt[aria-pressed="true"] .box{border:0;background:var(--grad);background-origin:border-box}
 .opt[aria-checked="true"] .box::after,.opt[aria-pressed="true"] .box::after{content:"";width:8px;height:8px;background:#fff;border-radius:50%}
 .opt.multi[aria-pressed="true"] .box::after{width:6px;height:11px;border:2.5px solid #fff;border-top:0;border-left:0;background:none;border-radius:0;transform:translateY(-1px) rotate(45deg)}
 .opt small{display:block;color:var(--muted);font-size:14px}
@@ -150,10 +150,10 @@ const Q = [
   {id:"age", title:"בן/בת כמה את/ה?", opts:["עד 24","25-34","35-44","45-54","55 ומעלה"]},
   {id:"family", title:"מצב משפחתי", opts:["רווק/ה","נשוי/אה או בזוגיות","גרוש/ה או אלמן/ה"],
    sub:{id:"kids", title:"כמה ילדים?", opts:["אין","1-2","3 ומעלה"]}},
-  {id:"work", title:"במה את/ה עובד/ת?", opts:["שכיר/ה","עצמאי/ת, עוסק פטור","עצמאי/ת, עוסק מורשה","בעל/ת חברה בע\"מ","לא עובד/ת כרגע"],
+  {id:"work", multi:true, none:"לא עובד/ת כרגע", title:"במה את/ה עובד/ת?", hint:"אפשר לבחור כמה. למשל שכיר/ה שיש לו/ה גם עוסק פטור.", opts:["שכיר/ה","עוסק פטור","עוסק מורשה","בעל/ת חברה בע\"מ","לא עובד/ת כרגע"],
    sub:{id:"bizAge", when:a=>isSelf(a), title:"כמה זמן העסק פעיל?", opts:["פחות משנה","1-3 שנים","יותר מ-3 שנים"]},
-   sub2:{id:"employees", when:a=>isSelf(a) && a.work!=="עצמאי/ת, עוסק פטור", title:"יש לך עובדים?", opts:["כן","לא"]}},
-  {id:"income", when:a=>a.work!=="לא עובד/ת כרגע", title:"הכנסה חודשית ממוצעת, נטו",
+   sub2:{id:"employees", when:a=>wk(a,"עוסק מורשה")||wk(a,"בעל/ת חברה בע\"מ"), title:"יש לך עובדים?", opts:["כן","לא"]}},
+  {id:"income", when:a=>!onlyNoWork(a), title:"הכנסה חודשית ממוצעת, נטו",
    hint:"לעצמאים: כמה נכנס לבנק בחודש, בערך. לא צריך מדויק.",
    opts:["עד 8,000 ₪","8,000-15,000 ₪","15,000-25,000 ₪","מעל 25,000 ₪","מעדיף/ה לא לענות"]},
   {id:"spouseWork", when:a=>a.family==="נשוי/אה או בזוגיות", title:"ובן/בת הזוג?", opts:["שכיר/ה","עצמאי/ת","לא עובד/ת כרגע"],
@@ -164,7 +164,9 @@ const Q = [
   {id:"fees", when:a=>has(a,"קרן פנסיה"), title:"את/ה יודע/ת כמה דמי ניהול את/ה משלם/ת בפנסיה?", opts:["כן, בערך","לא"]},
   {id:"smoke", title:"מעשן/ת?", hint:"משפיע על המחיר של ביטוחי חיים ובריאות.", opts:["לא","כן"]}
 ];
-function isSelf(a){return /עצמאי|חברה/.test(a.work||"")}
+function wk(a,x){return (a.work||[]).includes(x)}
+function isSelf(a){return wk(a,"עוסק פטור")||wk(a,"עוסק מורשה")||wk(a,"בעל/ת חברה בע\"מ")}
+function onlyNoWork(a){return wk(a,"לא עובד/ת כרגע")}
 function has(a,x){return (a.has||[]).includes(x)}
 const visibleQ = () => Q.filter(q => !q.when || q.when(A));
 
@@ -258,7 +260,6 @@ function ask(i){
     if (added) { const r=added.getBoundingClientRect(); if (r.bottom > window.innerHeight) added.scrollIntoView({behavior:"smooth", block:"center"}); return; }
     // מעבר אוטומטי אחרי בחירה יחידה כשהכול מולא
     const def=[q,...subs].find(x=>x.id===changedId);
-    if (ok && def && !def.multi) advTimer = setTimeout(goNext, 380);
   };
   const pick = (b) => {
     const id=b.dataset.q, v=b.dataset.v;
@@ -325,7 +326,7 @@ function elementary(){
 /* ===== ניקוד ===== */
 function score(a){
   const f = [];   // ממצאים: [משקל, כותרת, הסבר]
-  const self = isSelf(a), working = a.work && a.work!=="לא עובד/ת כרגע";
+  const self = isSelf(a), working = (a.work||[]).length>0 && !onlyNoWork(a);
   const married = a.family==="נשוי/אה או בזוגיות", kids = a.kids && a.kids!=="אין";
   const dependents = married || kids || has(a,"משכנתא");
   const unknown = has(a,"לא יודע/ת מה יש לי");
@@ -352,7 +353,7 @@ function score(a){
 const INC = {"עד 8,000 ₪":1,"8,000-15,000 ₪":2,"15,000-25,000 ₪":3,"מעל 25,000 ₪":4};
 function fit(a){
   const me = INC[a.income]||0, sp = INC[a.spouseIncome]||0;
-  const notWorking = a.work==="לא עובד/ת כרגע";
+  const notWorking = onlyNoWork(a);
   const notes=[];
   if (notWorking && sp<=1) return {fit:"לא מתאים", why:"לא עובד/ת ואין הכנסה משמעותית בבית"};
   if (me===1 && sp<=1) return {fit:"לא מתאים", why:"הכנסה עד 8,000 ובלי הכנסה משמעותית של בן/בת זוג"};
