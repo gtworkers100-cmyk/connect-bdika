@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>בדיקת מצב פנסיה וביטוח | Connect</title>
+<meta name="description" content="בדיקה קצרה: הפנסיה, הביטוחים והחיסכון שלכם במקום טוב? כ-10 שאלות, פחות משתי דקות, בלי עלות.">
+<meta property="og:title" content="הפנסיה והביטוחים שלכם במקום טוב? בדיקה של שתי דקות">
+<meta property="og:description" content="כ-10 שאלות קצרות, ובסוף תמונת מצב ומה כדאי לבדוק. Connect ביטוח ופיננסים, אורנה כהן.">
+<meta property="og:image" content="https://gtworkers100-cmyk.github.io/connect-bdika/assets/og.jpg">
+<meta property="og:locale" content="he_IL">
+<meta name="theme-color" content="#222C5F">
+<link rel="icon" href="assets/icon-32.png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#222C5F; --navy-2:#2B3672; --ink:#1B2350; --muted:#5B6488;
+  --teal:#00D9C5; --teal-d:#00A99A; --magenta:#D94BEA; --violet:#7A3FC0;
+  --bg:#F5F6FA; --card:#FFFFFF; --line:#E3E6F0; --warn:#C2338F; --ok:#0E9C8C;
+  --grad:linear-gradient(120deg,var(--magenta) 0%,var(--violet) 45%,var(--teal) 100%);
+  --r:18px;
+}
+*{box-sizing:border-box}
+[tabindex="-1"]:focus{outline:none}
+html,body{overflow-x:hidden}
+html,body{margin:0}
+body{-webkit-tap-highlight-color:transparent;font-family:Heebo,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+.hero{background:var(--navy);color:#fff;position:relative;overflow:hidden;padding:22px 16px 72px}
+.hero::after{content:"";position:absolute;inset:auto -20% -60% -20%;height:70%;background:radial-gradient(closest-side,rgba(217,75,234,.28),transparent),radial-gradient(closest-side at 70% 40%,rgba(0,217,197,.25),transparent);pointer-events:none}
+.hero .logo{display:block;width:118px;height:auto;margin:0 auto}
+.wrap{max-width:620px;margin:0 auto;padding:0 16px}
+.card{background:var(--card);border-radius:var(--r);box-shadow:0 10px 30px rgba(34,44,95,.10);margin:-52px auto 24px;max-width:620px;position:relative;z-index:1;padding:26px 22px}
+@media (min-width:640px){.card{padding:34px 36px}}
+h1{font-size:28px;line-height:1.25;margin:4px 0 10px;font-weight:800;letter-spacing:-.3px}
+h2{font-size:23px;line-height:1.3;margin:0 0 6px;font-weight:800}
+p{margin:0 0 12px}
+.lead{color:var(--muted);font-size:17px}
+.grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 18px;padding:0;list-style:none}
+.pills li{background:#F0F1F8;border-radius:999px;padding:5px 12px;font-size:14px;color:var(--navy);font-weight:500}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;padding:15px 22px;font-weight:700;font-size:18px;cursor:pointer;min-height:54px;text-decoration:none;transition:transform .08s ease, box-shadow .2s}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--grad);color:#fff;box-shadow:0 8px 20px rgba(122,63,192,.28);width:100%}
+.btn-ghost{background:transparent;color:var(--navy);border:1.5px solid var(--line)}
+.btn[disabled]{opacity:.45;cursor:not-allowed;box-shadow:none}
+.link{background:none;border:0;color:var(--navy);text-decoration:underline;cursor:pointer;padding:6px 0;font-size:15px}
+.fine{font-size:13.5px;color:var(--muted)}
+.about{display:flex;gap:12px;align-items:center;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.about img{width:44px;height:auto;flex:none}
+.note{background:#FBF2FD;border-right:4px solid var(--magenta);padding:10px 12px;border-radius:10px;font-size:14.5px;margin:14px 0 0}
+/* progress */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.bar{flex:1;height:8px;background:#ECEEF5;border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--grad);border-radius:99px;transition:width .35s ease}
+.step-n{font-size:13px;color:var(--muted);white-space:nowrap}
+.back{background:none;border:0;color:var(--muted);cursor:pointer;font-size:15px;padding:6px 0}
+.hint{color:var(--muted);font-size:15px;margin:0 0 14px}
+.opts{display:grid;gap:10px;margin:16px 0 6px}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:right;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;cursor:pointer;min-height:56px;font-size:17px;transition:border-color .15s, background .15s}
+@media (hover:hover){.opt:hover{border-color:#C9CDE0}}
+.opt .box{width:22px;height:22px;border-radius:50%;border:2px solid #B9BED6;flex:none;display:grid;place-items:center}
+.opt.multi .box{border-radius:6px}
+.opt[aria-checked="true"],.opt[aria-pressed="true"]{border-color:var(--violet);background:#F7F2FD}
+.opt[aria-checked="true"] .box,.opt[aria-pressed="true"] .box{border-color:transparent;background:var(--grad)}
+.opt[aria-checked="true"] .box::after,.opt[aria-pressed="true"] .box::after{content:"";width:8px;height:8px;background:#fff;border-radius:50%}
+.opt.multi[aria-pressed="true"] .box::after{width:6px;height:11px;border:2.5px solid #fff;border-top:0;border-left:0;background:none;border-radius:0;transform:translateY(-1px) rotate(45deg)}
+.opt small{display:block;color:var(--muted);font-size:14px}
+.sub-q{margin-top:22px}
+.actions{margin-top:18px;position:sticky;bottom:0;padding:12px 0 calc(12px + env(safe-area-inset-bottom));background:linear-gradient(to top,#fff 70%,rgba(255,255,255,0));z-index:2}
+/* result */
+.badge{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 14px;font-weight:700;font-size:15px}
+.b-red{background:#FCE9F5;color:var(--warn)}
+.b-mid{background:#F1EAFB;color:var(--violet)}
+.b-ok{background:#E3F7F4;color:var(--ok)}
+.meter{height:12px;border-radius:99px;background:linear-gradient(270deg,var(--teal),#9B7BE0,var(--magenta));position:relative;margin:18px 0 6px}
+.meter b{position:absolute;top:50%;width:22px;height:22px;border-radius:50%;background:#fff;border:4px solid var(--navy);transform:translate(50%,-50%);transition:right .6s ease}
+.meter-l{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted)}
+.finds{list-style:none;padding:0;margin:16px 0}
+.finds li{padding:12px 14px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;display:flex;gap:10px}
+.finds li::before{content:"";flex:none;width:10px;height:10px;border-radius:50%;margin-top:8px;background:var(--grad)}
+.finds b{display:block}
+.tips li::before{background:var(--teal)}
+/* form */
+form .f{margin:12px 0}
+label.l{display:block;font-weight:500;margin-bottom:6px}
+.in{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;font-size:17px;background:#fff;min-height:52px}
+.in:focus,.opt:focus-visible,.btn:focus-visible,.link:focus-visible{outline:3px solid rgba(122,63,192,.35);outline-offset:2px;border-color:var(--violet)}
+.in[aria-invalid="true"]{border-color:var(--warn)}
+.err{color:var(--warn);font-size:14px;margin-top:4px;min-height:0}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:15px;margin:14px 0}
+.chk input{width:22px;height:22px;margin-top:2px;flex:none;accent-color:var(--violet)}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg .opt{width:auto;flex:1 1 30%;justify-content:center;min-height:48px;padding:10px}
+.seg .opt .box{display:none}
+.hp{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);opacity:0;pointer-events:none}
+.center{text-align:center}
+.big-ic{width:64px;height:64px;border-radius:50%;margin:0 auto 12px;display:grid;place-items:center;background:var(--grad);color:#fff;font-size:30px;font-weight:800}
+footer{max-width:620px;margin:0 auto 32px;padding:0 16px;text-align:center}
+footer .fine{line-height:1.6}
+dialog{border:0;border-radius:16px;max-width:520px;width:calc(100% - 32px);padding:22px}
+dialog::backdrop{background:rgba(20,26,60,.55)}
+.fade{animation:fade .22s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <img class="logo" src="assets/logo-white.webp" alt="Connect ביטוח ופיננסים" width="480" height="354">
+</header>
+
+<main>
+  <section class="card" id="app" aria-live="polite"></section>
+</main>
+
+<footer>
+  <p class="fine">Connect ביטוח ופיננסים · אורנה כהן, סוכנת ביטוח ופנסיה עצמאית<br>
+  הבדיקה נותנת תמונה כללית בלבד ואינה ייעוץ פנסיוני או ביטוחי אישי.<br>
+  <button class="link fine" type="button" id="privacyBtn">מדיניות פרטיות</button></p>
+</footer>
+
+<dialog id="privacy" aria-labelledby="pvT">
+  <h2 id="pvT">פרטיות</h2>
+  <p class="fine">התשובות בבדיקה משמשות רק כדי להציג לכם את תמונת המצב. אם תבחרו להשאיר פרטים, השם, הטלפון והתשובות יישמרו אצל Connect ביטוח ופיננסים, ישמשו רק כדי לחזור אליכם ולהכין את הפגישה, ולא יימסרו לאף גורם אחר. אם ביקשתם ביטוח רכב, דירה או עסק, הפרטים יועברו, בהסכמתכם, לסוכן ביטוח אלמנטרי שעובד איתנו. כדי לבקש מחיקה של הפרטים אפשר לפנות אלינו בכל עת.</p>
+  <button class="btn btn-ghost" type="button" onclick="this.closest('dialog').close()">סגירה</button>
+</dialog>
+
+<script>
+/* ===== הגדרות ===== */
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbypzi4FRLud1UdcSTAlpBtVGShl1FPh4pEiMuu9Grhrr5oipDqoin5WVV_OKhRKnr5t/exec"; // כתובת ה-Web App של Apps Script
+const SRC = (new URLSearchParams(location.search).get("src") || "ישיר").slice(0,60);
+
+/* ===== מצב ===== */
+const A = {};            // תשובות
+let path = [];           // היסטוריית מסכים
+const $app = document.getElementById("app");
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ===== השאלות ===== */
+const ELEM = "ביטוח רכב, דירה או עסק";
+const Q = [
+  {id:"topics", multi:true, title:"מה הכי מעניין אותך לבדוק?", hint:"אפשר לבחור כמה.",
+   opts:["פנסיה וחיסכון לעתיד","ביטוחי בריאות","ביטוח חיים ואובדן כושר עבודה","קרן השתלמות והשקעות", ELEM]},
+  {id:"agent", title:"יש לך היום סוכן ביטוח שמטפל בתיק?",
+   opts:["אין לי סוכן","יש, ואני מרוצה ממנו","יש, אבל אני לא בטוח/ה מה הוא עושה בשבילי","יש, ואני לא מרוצה","לא יודע/ת"]},
+  {id:"age", title:"בן/בת כמה את/ה?", opts:["עד 24","25-34","35-44","45-54","55 ומעלה"]},
+  {id:"family", title:"מצב משפחתי", opts:["רווק/ה","נשוי/אה או בזוגיות","גרוש/ה או אלמן/ה"],
+   sub:{id:"kids", title:"כמה ילדים?", opts:["אין","1-2","3 ומעלה"]}},
+  {id:"work", title:"במה את/ה עובד/ת?", opts:["שכיר/ה","עצמאי/ת, עוסק פטור","עצמאי/ת, עוסק מורשה","בעל/ת חברה בע\"מ","לא עובד/ת כרגע"],
+   sub:{id:"bizAge", when:a=>isSelf(a), title:"כמה זמן העסק פעיל?", opts:["פחות משנה","1-3 שנים","יותר מ-3 שנים"]},
+   sub2:{id:"employees", when:a=>isSelf(a) && a.work!=="עצמאי/ת, עוסק פטור", title:"יש לך עובדים?", opts:["כן","לא"]}},
+  {id:"income", when:a=>a.work!=="לא עובד/ת כרגע", title:"הכנסה חודשית ממוצעת, נטו",
+   hint:"לעצמאים: כמה נכנס לבנק בחודש, בערך. לא צריך מדויק.",
+   opts:["עד 8,000 ₪","8,000-15,000 ₪","15,000-25,000 ₪","מעל 25,000 ₪","מעדיף/ה לא לענות"]},
+  {id:"spouseWork", when:a=>a.family==="נשוי/אה או בזוגיות", title:"ובן/בת הזוג?", opts:["שכיר/ה","עצמאי/ת","לא עובד/ת כרגע"],
+   sub:{id:"spouseIncome", when:a=>a.spouseWork && a.spouseWork!=="לא עובד/ת כרגע", title:"הכנסה חודשית של בן/בת הזוג, בערך", opts:["עד 8,000 ₪","8,000-15,000 ₪","15,000-25,000 ₪","מעל 25,000 ₪","לא יודע/ת"]}},
+  {id:"has", multi:true, title:"מה יש לך היום?", hint:"מה שידוע לך. אפשר לבחור כמה.",
+   opts:["קרן פנסיה","קרן השתלמות","ביטוח בריאות פרטי","ביטוח חיים","ביטוח אובדן כושר עבודה","משכנתא","לא יודע/ת מה יש לי"], none:"לא יודע/ת מה יש לי"},
+  {id:"lastCheck", title:"מתי מישהו עבר איתך על התיק בפעם האחרונה?", opts:["בשנה האחרונה","לפני 1-3 שנים","לפני יותר מ-3 שנים","אף פעם"]},
+  {id:"fees", when:a=>has(a,"קרן פנסיה"), title:"את/ה יודע/ת כמה דמי ניהול את/ה משלם/ת בפנסיה?", opts:["כן, בערך","לא"]},
+  {id:"smoke", title:"מעשן/ת?", hint:"משפיע על המחיר של ביטוחי חיים ובריאות.", opts:["לא","כן"]}
+];
+function isSelf(a){return /עצמאי|חברה/.test(a.work||"")}
+function has(a,x){return (a.has||[]).includes(x)}
+const visibleQ = () => Q.filter(q => !q.when || q.when(A));
+
+/* ===== מסכים ===== */
+function show(html, focusSel){
+  $app.innerHTML = `<div class="fade">${html}</div>`;
+  const f = focusSel ? $app.querySelector(focusSel) : $app.querySelector("h1,h2");
+  if (f){ f.setAttribute("tabindex","-1"); f.focus({preventScroll:true}); }
+  // גוללים למעלה רק אם ראש הכרטיס לא נראה
+  const top = $app.getBoundingClientRect().top;
+  if (top < 0 || top > window.innerHeight*0.6) window.scrollTo({top: Math.max(0, window.scrollY + top - 12), behavior:"auto"});
+}
+
+function intro(){
+  path=[];
+  show(`
+    <h1>הפנסיה והביטוחים שלך <span class="grad-text">במקום טוב?</span></h1>
+    <p class="lead">בדיקה קצרה, כ-10 שאלות, פחות משתי דקות. בסוף מקבלים תמונת מצב ומה כדאי לבדוק.</p>
+    <ul class="pills"><li>בלי עלות</li><li>בלי התחייבות</li><li>לא צריך מספרים מדויקים</li></ul>
+    <button class="btn btn-primary" id="go">מתחילים</button>
+    <div class="about">
+      <img src="assets/mark.webp" alt="" width="44" height="42">
+      <p class="fine" style="margin:0">אורנה כהן, סוכנת ביטוח ופנסיה עצמאית. 17 שנה בתחום, עובדת מול כל חברות הביטוח ובצד של המבוטח.</p>
+    </div>
+    <p class="note">אנחנו מתמחים בפנסיה, ביטוחי בריאות וחיים וחיסכון. ביטוח רכב, דירה ועסק אנחנו לא עושים.</p>
+  `);
+  document.getElementById("go").onclick = () => { track("start"); ask(0); };
+}
+
+function optBtn(q, o){
+  const multi = !!q.multi;
+  const sel = multi ? (A[q.id]||[]).includes(o) : A[q.id]===o;
+  return `<button type="button" class="opt ${multi?"multi":""}" data-q="${q.id}" data-v="${esc(o)}" ${multi?`aria-pressed="${sel}"`:`role="radio" aria-checked="${sel}"`}><span class="box"></span><span>${esc(o)}</span></button>`;
+}
+function block(q, isSub){
+  return `<div class="${isSub?"sub-q":""}" data-block="${q.id}">
+    ${isSub?`<h3 style="margin:0 0 4px;font-size:19px" id="t_${q.id}">${esc(q.title)}</h3>`:`<h2 id="t_${q.id}">${esc(q.title)}</h2>`}
+    ${q.hint?`<p class="hint">${esc(q.hint)}</p>`:""}
+    <div class="opts" ${q.multi?"":`role="radiogroup"`} aria-labelledby="t_${q.id}">${q.opts.map(o=>optBtn(q,o)).join("")}</div>
+  </div>`;
+}
+
+let advTimer=null;
+function ask(i){
+  clearTimeout(advTimer);
+  const vq = visibleQ();
+  if (i >= vq.length) return result();
+  const q = vq[i];
+  path.push(() => ask(i));
+  const subs = [q.sub, q.sub2].filter(Boolean);
+  const liveSubs = () => subs.filter(s => A[q.id]!==undefined && (!s.when || s.when(A)));
+  const pct = Math.round((i)/vq.length*100);
+  show(`
+    <div class="top">
+      <button class="back" type="button" id="back">→ חזרה</button>
+      <div class="bar" aria-hidden="true"><i style="width:${pct}%"></i></div>
+      <span class="step-n">שאלה ${i+1}</span>
+    </div>
+    ${block(q)}
+    <div id="subs">${liveSubs().map(s=>block(s,true)).join("")}</div>
+    <div class="actions" id="actions"><button class="btn btn-primary" id="next" ${ready(q,liveSubs())?"":"disabled"}>${i+1===vq.length?"לתוצאה":"הבא"}</button></div>
+  `);
+  // מעבר הלאה
+  const goNext = () => {
+    clearTimeout(advTimer);
+    const live = liveSubs();
+    subs.forEach(s => { if (!live.includes(s)) delete A[s.id]; });
+    if (q.id==="topics" && onlyElem()) { track("elementary"); return elementary(); }
+    if (q.id==="agent" && A.agent==="יש, ואני מרוצה ממנו") { track("redline"); return redline(); }
+    ask(i+1);
+  };
+  // עדכון במקום, בלי לרנדר את כל המסך
+  const sync = (changedId) => {
+    const live = liveSubs();
+    const box = document.getElementById("subs");
+    // הסרת תת-שאלות שכבר לא רלוונטיות
+    box.querySelectorAll("[data-block]").forEach(el => { if (!live.some(s=>s.id===el.dataset.block)) el.remove(); });
+    // הוספת תת-שאלות חדשות במקומן
+    let added=null;
+    live.forEach((s,idx) => {
+      if (!box.querySelector(`[data-block="${s.id}"]`)) {
+        const tmp=document.createElement("div"); tmp.innerHTML=block(s,true); const el=tmp.firstElementChild; el.classList.add("fade");
+        const after = live.slice(0,idx).map(x=>box.querySelector(`[data-block="${x.id}"]`)).filter(Boolean).pop();
+        after ? after.after(el) : box.prepend(el);
+        el.querySelectorAll(".opt").forEach(b => b.onclick = () => pick(b));
+        added = added || el;
+      }
+    });
+    const ok = ready(q, live);
+    document.getElementById("next").disabled = !ok;
+    if (added) { const r=added.getBoundingClientRect(); if (r.bottom > window.innerHeight) added.scrollIntoView({behavior:"smooth", block:"center"}); return; }
+    // מעבר אוטומטי אחרי בחירה יחידה כשהכול מולא
+    const def=[q,...subs].find(x=>x.id===changedId);
+    if (ok && def && !def.multi) advTimer = setTimeout(goNext, 380);
+  };
+  const pick = (b) => {
+    const id=b.dataset.q, v=b.dataset.v;
+    const def=[q,...subs].find(x=>x.id===id);
+    if (def.multi){
+      let arr = A[id]||[];
+      if (arr.includes(v)) arr = arr.filter(x=>x!==v);
+      else arr = def.none && v===def.none ? [v] : [...arr.filter(x=>x!==def.none), v];
+      A[id]=arr;
+      $app.querySelectorAll(`[data-q="${id}"]`).forEach(x=>x.setAttribute("aria-pressed", arr.includes(x.dataset.v)));
+    } else {
+      A[id]=v;
+      $app.querySelectorAll(`[data-q="${id}"]`).forEach(x=>x.setAttribute("aria-checked", x.dataset.v===v));
+    }
+    clearTimeout(advTimer);
+    sync(id);
+  };
+  $app.querySelectorAll(".opt").forEach(b => b.onclick = () => pick(b));
+  document.getElementById("next").onclick = goNext;
+  document.getElementById("back").onclick = () => { clearTimeout(advTimer); goBack(); };
+}
+function ready(q, live){
+  const ok = x => x.multi ? (A[x.id]||[]).length>0 : A[x.id]!==undefined;
+  return ok(q) && live.every(ok);
+}
+function goBack(){
+  path.pop();                      // המסך הנוכחי
+  const prev = path.pop();
+  if (prev) prev(); else intro();
+}
+function onlyElem(){ const t=A.topics||[]; return t.length===1 && t[0]===ELEM; }
+
+/* ===== קו אדום: מרוצה מהסוכן ===== */
+function redline(){
+  path.push(redline);
+  show(`
+    <div class="center"><div class="big-ic">✓</div></div>
+    <h2 class="center">מעולה שיש לך סוכן שאת/ה מרוצה ממנו</h2>
+    <p class="lead center">זה בדיוק מה שצריך. אנחנו לא נכנסים לתיק של מי שכבר מטופל טוב.</p>
+    <p>כמה דברים ששווה לשאול את הסוכן שלך פעם בשנה:</p>
+    <ul class="finds tips">
+      <li><span><b>דמי ניהול</b>מה אני משלם/ת מההפקדה ומהצבירה, והאם אפשר פחות?</span></li>
+      <li><span><b>כפל ביטוחים</b>אני מבוטח/ת פעמיים על אותו דבר?</span></li>
+      <li><span><b>אובדן כושר עבודה</b>על איזה סכום אני מכוסה אם לא אוכל לעבוד?</span></li>
+    </ul>
+    <button class="btn btn-ghost" type="button" id="back" style="width:100%">רגע, טעיתי בתשובה</button>
+  `);
+  document.getElementById("back").onclick = goBack;
+}
+
+/* ===== רק אלמנטרי ===== */
+function elementary(){
+  path.push(elementary);
+  show(`
+    <h2>ביטוח רכב, דירה ועסק אנחנו לא עושים</h2>
+    <p class="lead">אנחנו מתמחים בפנסיה, ביטוחי בריאות וחיים וחיסכון. אבל יש לנו סוכן ביטוח אלמנטרי מהימן שעובד איתנו, ואפשר להעביר אליו את הפרטים.</p>
+    ${leadForm("elem")}
+    <button class="link" type="button" id="back">→ חזרה</button>
+  `);
+  bindForm("elem");
+  document.getElementById("back").onclick = goBack;
+}
+
+/* ===== ניקוד ===== */
+function score(a){
+  const f = [];   // ממצאים: [משקל, כותרת, הסבר]
+  const self = isSelf(a), working = a.work && a.work!=="לא עובד/ת כרגע";
+  const married = a.family==="נשוי/אה או בזוגיות", kids = a.kids && a.kids!=="אין";
+  const dependents = married || kids || has(a,"משכנתא");
+  const unknown = has(a,"לא יודע/ת מה יש לי");
+  if (unknown) f.push([2,"לא ברור מה יש לך","הצעד הראשון הוא לדעת מה יש: איזו קופה, איזה ביטוח, ועל מה משלמים."]);
+  if (self && !has(a,"קרן פנסיה") && !unknown) f.push([3,"עצמאי/ת בלי קרן פנסיה","עצמאים חייבים להפקיד לפנסיה. ובלי קרן אין חיסכון לפרישה, ולרוב גם אין כיסוי למקרה שלא תוכל/י לעבוד."]);
+  if (!self && working && !has(a,"קרן פנסיה") && !unknown) f.push([2,"לא ידוע לך על קרן פנסיה","שכירים אמורים להיות מבוטחים בפנסיה דרך העבודה. שווה לבדוק שזה באמת קורה."]);
+  if (dependents && !has(a,"ביטוח חיים") && !unknown) f.push([2,"יש מי שתלוי בך, ואין ביטוח חיים","קרן הפנסיה נותנת כיסוי מסוים למשפחה, אבל לרוב הוא לא מספיק כשיש ילדים או משכנתא."]);
+  if (self && working && !has(a,"ביטוח אובדן כושר עבודה") && !unknown) f.push([2,"עצמאי/ת בלי ביטוח אובדן כושר עבודה","אם לא תוכל/י לעבוד כמה חודשים, אין מעסיק שמשלים. הכיסוי בקרן הפנסיה נקבע לפי מה שמפקידים."]);
+  if (a.lastCheck==="לפני יותר מ-3 שנים" || a.lastCheck==="אף פעם") f.push([2,"התיק לא נבדק הרבה זמן","מסלולים, דמי ניהול וכיסויים משתנים. מה שהתאים לפני כמה שנים לא בהכרח מתאים היום."]);
+  else if (a.lastCheck==="לפני 1-3 שנים") f.push([1,"עברה תקופה מהבדיקה האחרונה","שווה לבדוק שהמסלול ודמי הניהול עדיין מתאימים לגיל ולמצב שלך."]);
+  if (a.fees==="לא") f.push([1,"לא ידוע לך כמה דמי ניהול את/ה משלם/ת","הפרש קטן בדמי הניהול מצטבר לסכום גדול עד הפרישה."]);
+  if (has(a,"ביטוח בריאות פרטי")) f.push([1,"ייתכן כפל בביטוחי בריאות","הרבה משלמים על ביטוח משלים בקופה, ביטוח דרך העבודה וביטוח פרטי, וחלק מהכיסויים חופפים."]);
+  else if (!unknown) f.push([1,"אין ביטוח בריאות פרטי","ניתוחים, תרופות מחוץ לסל ובדיקות מהירות עלולים לעלות הרבה מהכיס."]);
+  if (has(a,"משכנתא") && !has(a,"ביטוח חיים")) f.push([1,"ביטוח החיים של המשכנתא","הרבה סוגרים אותו בבנק בלי להשוות. שווה לבדוק מה משלמים."]);
+  if (working && !has(a,"קרן השתלמות") && !unknown && /15,000|25,000/.test(a.income||"")) f.push([1,"אין קרן השתלמות","חיסכון עם הטבת מס, שאפשר למשוך אחרי שש שנים."]);
+  if (a.agent==="יש, ואני לא מרוצה" || a.agent==="יש, אבל אני לא בטוח/ה מה הוא עושה בשבילי") f.push([1,"לא ברור מה הסוכן עושה בשבילך","מגיע לך מישהו שמסביר ברור ועומד לצידך מול חברת הביטוח."]);
+  f.sort((x,y)=>y[0]-x[0]);
+  const total = f.reduce((s,x)=>s+x[0],0);
+  const level = total>=5 ? "red" : total>=2 ? "mid" : "ok";
+  return {total, level, finds:f};
+}
+
+/* ===== התאמה לאורנה (פנימי, לא מוצג) ===== */
+const INC = {"עד 8,000 ₪":1,"8,000-15,000 ₪":2,"15,000-25,000 ₪":3,"מעל 25,000 ₪":4};
+function fit(a){
+  const me = INC[a.income]||0, sp = INC[a.spouseIncome]||0;
+  const notWorking = a.work==="לא עובד/ת כרגע";
+  const notes=[];
+  if (notWorking && sp<=1) return {fit:"לא מתאים", why:"לא עובד/ת ואין הכנסה משמעותית בבית"};
+  if (me===1 && sp<=1) return {fit:"לא מתאים", why:"הכנסה עד 8,000 ובלי הכנסה משמעותית של בן/בת זוג"};
+  if (a.employees==="כן") notes.push("מעסיק/ה עובדים (פוטנציאל B2B)");
+  if (me===4 || sp===4) notes.push("הכנסה גבוהה");
+  const check=[];
+  if (a.age==="עד 24") check.push("מתחת ל-25");
+  if (!me) check.push(notWorking?"לא עובד/ת":"לא ציין/ה הכנסה");
+  else if (me<=2 && sp<=1) check.push("הכנסה עד 15,000 במשק הבית");
+  if (a.bizAge==="פחות משנה") check.push("עסק פחות משנה");
+  if (a.agent==="לא יודע/ת") check.push("לא ברור אם יש סוכן");
+  if (check.length) return {fit:"לבדיקה", why:[...check,...notes].join(" · ")};
+  return {fit:"מתאים", why:notes.join(" · ")};
+}
+
+/* ===== תוצאה ===== */
+let R=null;
+function result(){
+  R = score(A); track("result");
+  path.push(result);
+  const L = {red:["כדאי לבדוק בהקדם","b-red",85], mid:["יש כמה דברים לשפר","b-mid",50], ok:["נראה שאת/ה במצב טוב","b-ok",14]}[R.level];
+  const top = R.finds.slice(0,3);
+  const strong = R.level!=="ok";
+  show(`
+    <span class="badge ${L[1]}">${L[0]}</span>
+    <h2 style="margin-top:12px">${strong?"מצאנו כמה דברים ששווה לבדוק":"התמונה הכללית טובה"}</h2>
+    <div class="meter" role="img" aria-label="מצב: ${L[0]}"><b style="right:${L[2]}%"></b></div>
+    <div class="meter-l"><span>במצב טוב</span><span>כדאי לבדוק</span></div>
+    ${top.length?`<ul class="finds">${top.map(x=>`<li><span><b>${esc(x[1])}</b>${esc(x[2])}</span></li>`).join("")}</ul>`:""}
+    ${strong ? `
+      <h2 style="font-size:20px;margin-top:20px">רוצה שאורנה תעבור על זה איתך?</h2>
+      <p>בדיקה מלאה של התיק, בלי עלות. יוצאים עם תמונה ברורה של מה יש, מה כפול ומה חסר. פגישה במשרד, בזום או בטלפון.</p>
+      ${leadForm("main")}
+    ` : `
+      <p>בכל זאת, פעם בשנה שווה לבדוק דמי ניהול ומסלול השקעה.</p>
+      <button class="link" type="button" id="soft">רוצה בכל זאת שאורנה תציץ? אפשר להשאיר פרטים</button>
+      <div id="softBox"></div>
+    `}
+    <button class="link" type="button" id="back">→ חזרה לשאלות</button>
+  `);
+  document.getElementById("back").onclick = goBack;
+  if (strong) bindForm("main");
+  else document.getElementById("soft").onclick = () => {
+    document.getElementById("softBox").innerHTML = leadForm("soft");
+    bindForm("soft"); document.getElementById("soft").remove();
+    document.querySelector("#f_soft input[name=name]").focus();
+  };
+}
+
+/* ===== טופס פרטים ===== */
+function leadForm(kind){
+  const elem = kind==="elem";
+  return `<form id="f_${kind}" novalidate>
+    <div class="hp" aria-hidden="true"><label>אל תמלאו<input name="website" tabindex="-1" autocomplete="off"></label></div>
+    <div class="f"><label class="l" for="n_${kind}">שם</label><input class="in" id="n_${kind}" name="name" autocomplete="name" required><div class="err" id="e_n_${kind}"></div></div>
+    <div class="f"><label class="l" for="p_${kind}">טלפון נייד</label><input class="in" id="p_${kind}" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" style="text-align:right" placeholder="050-0000000" required><div class="err" id="e_p_${kind}"></div></div>
+    <div class="f"><label class="l" for="c_${kind}">עיר <span class="fine">(לא חובה)</span></label><input class="in" id="c_${kind}" name="city" autocomplete="address-level2"></div>
+    ${elem ? `
+      <div class="f"><span class="l" id="w_${kind}">מה צריך לבטח?</span><div class="seg" data-multi="needs" aria-labelledby="w_${kind}">${["רכב","דירה","עסק"].map(o=>`<button type="button" class="opt multi" aria-pressed="false" data-v="${o}"><span class="box"></span>${o}</button>`).join("")}</div></div>
+    ` : `
+      <div class="f"><span class="l" id="w_${kind}">מתי נוח שנחזור אליך?</span><div class="seg" data-one="when" aria-labelledby="w_${kind}">${["בוקר","צהריים","ערב"].map(o=>`<button type="button" class="opt" role="radio" aria-checked="false" data-v="${o}"><span class="box"></span>${o}</button>`).join("")}</div></div>
+    `}
+    <label class="chk"><input type="checkbox" name="consent" required><span>${elem
+      ? "אני מאשר/ת להעביר את הפרטים שלי לסוכן ביטוח אלמנטרי שעובד עם Connect, כדי שיחזור אליי."
+      : "אני מאשר/ת ש-Connect ביטוח ופיננסים תחזור אליי לגבי הבדיקה. הפרטים לא מועברים לאף אחד אחר."}</span></label>
+    <div class="err" id="e_x_${kind}"></div>
+    <button class="btn btn-primary" type="submit">${elem?"שליחה":"אני רוצה בדיקה בלי עלות"}</button>
+    <p class="fine" style="margin-top:8px">בלחיצה את/ה מאשר/ת את <button class="link fine" type="button" onclick="document.getElementById('privacy').showModal()">מדיניות הפרטיות</button>.</p>
+  </form>`;
+}
+function bindForm(kind){
+  const f = document.getElementById("f_"+kind);
+  const extra = {when:"", needs:[]};
+  f.querySelectorAll("[data-one] .opt").forEach(b=>b.onclick=()=>{f.querySelectorAll("[data-one] .opt").forEach(x=>x.setAttribute("aria-checked","false"));b.setAttribute("aria-checked","true");extra.when=b.dataset.v;});
+  f.querySelectorAll("[data-multi] .opt").forEach(b=>b.onclick=()=>{const on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);extra.needs=on?[...extra.needs,b.dataset.v]:extra.needs.filter(x=>x!==b.dataset.v);});
+  f.onsubmit = async e => {
+    e.preventDefault();
+    const name=f.name.value.trim(), phoneRaw=f.phone.value, phone=normPhone(phoneRaw);
+    let bad=false;
+    setErr(f.name,"e_n_"+kind, name.length<2 ? (bad=true,"צריך שם") : "");
+    setErr(f.phone,"e_p_"+kind, !phone ? (bad=true,"צריך מספר נייד תקין, למשל 050-1234567") : "");
+    document.getElementById("e_x_"+kind).textContent = !f.consent.checked ? (bad=true,"צריך לסמן אישור כדי שנוכל לחזור אליך") : "";
+    if (bad) return;
+    if (f.website.value) return thanks(kind, name); // בוט
+    const btn=f.querySelector("button[type=submit]"); btn.disabled=true; btn.textContent="שולח...";
+    const F = kind==="elem" ? {fit:"אלמנטרי", why:""} : fit(A);
+    const payload = {
+      kind: kind==="elem" ? "elementary" : "lead",
+      soft: kind==="soft",
+      name, phone, city:f.city.value.trim(), when:extra.when, needs:extra.needs.join(", "),
+      src:SRC, answers:A,
+      score: R ? R.total : "", level: R ? R.level : "",
+      finds: R ? R.finds.map(x=>x[1]).join(" | ") : "",
+      fit:F.fit, fitWhy:F.why, ua:navigator.userAgent.slice(0,120)
+    };
+    try { await send(payload); track("lead_"+(kind==="elem"?"elem":F.fit)); thanks(kind, name); }
+    catch(err){ btn.disabled=false; btn.textContent="לנסות שוב"; document.getElementById("e_x_"+kind).textContent="משהו לא עבד בשליחה. אפשר לנסות שוב."; }
+  };
+}
+function setErr(input,id,msg){input.setAttribute("aria-invalid",msg?"true":"false");document.getElementById(id).textContent=msg;}
+function normPhone(p){
+  let d=String(p).replace(/[^\d+]/g,"");
+  if (d.startsWith("+972")) d="0"+d.slice(4); else if (d.startsWith("972")) d="0"+d.slice(3);
+  return /^05\d{8}$/.test(d) ? d.slice(0,3)+"-"+d.slice(3) : "";
+}
+async function send(payload){
+  if (ENDPOINT.startsWith("PASTE")) { console.log("DEMO payload", payload); await new Promise(r=>setTimeout(r,500)); return; }
+  const r = await fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
+  const j = await r.json().catch(()=>({}));
+  if (!r.ok || !j.ok) throw new Error(j.error||"send failed");
+}
+function track(ev){
+  if (ENDPOINT.startsWith("PASTE")) return;
+  try { navigator.sendBeacon(ENDPOINT, new Blob([JSON.stringify({kind:"event", ev, src:SRC})],{type:"text/plain"})); } catch(e){}
+}
+function thanks(kind, name){
+  path=[];
+  show(`
+    <div class="center"><div class="big-ic">✓</div></div>
+    <h2 class="center">תודה ${esc(name.split(" ")[0])}, קיבלנו</h2>
+    ${kind==="elem"
+      ? `<p class="lead center">נעביר את הפרטים לסוכן הביטוח האלמנטרי, והוא יחזור אליך.</p>`
+      : `<p class="lead center">נחזור אליך בהקדם, בדרך כלל באותו יום, כדי לתאם פגישה עם אורנה. במשרד, בזום או בטלפון, מה שנוח לך.</p>
+         <p class="center fine">כדאי להכין את הדוח השנתי האחרון מקרן הפנסיה, אם יש. לא חובה.</p>`}
+  `);
+}
+
+document.getElementById("privacyBtn").onclick=()=>document.getElementById("privacy").showModal();
+intro();
+</script>
+</body>
+</html>
