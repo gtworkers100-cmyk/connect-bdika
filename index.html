@@ -454,6 +454,10 @@ function bindForm(kind){
   const sb=f.querySelector('button[type=submit]'), hint=f.querySelector('.need-ok');
   const syncOk=()=>{sb.disabled=!f.consent.checked; if(hint) hint.style.display=f.consent.checked?'none':'';};
   f.consent.addEventListener('change',syncOk); syncOk();
+  f.name.addEventListener('blur',()=>{ if(f.name.value.trim()) setErr(f.name,"e_n_"+kind,nameErr(f.name.value)); });
+  f.phone.addEventListener('blur',()=>{ const v=f.phone.value.trim(); if(!v) return; const ph=normPhone(v); setErr(f.phone,"e_p_"+kind, ph?"":"צריך מספר נייד תקין, למשל 050-8123456"); if(ph) f.phone.value=ph; });
+  f.name.addEventListener('input',()=>{ if(!nameErr(f.name.value)) setErr(f.name,"e_n_"+kind,""); });
+  f.phone.addEventListener('input',()=>{ if(normPhone(f.phone.value)) setErr(f.phone,"e_p_"+kind,""); });
   const extra = {when:"", needs:[]};
   f.querySelectorAll("[data-one] .opt").forEach(b=>b.onclick=()=>{f.querySelectorAll("[data-one] .opt").forEach(x=>x.setAttribute("aria-checked","false"));b.setAttribute("aria-checked","true");extra.when=b.dataset.v;});
   f.querySelectorAll("[data-multi] .opt").forEach(b=>b.onclick=()=>{const on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);extra.needs=on?[...extra.needs,b.dataset.v]:extra.needs.filter(x=>x!==b.dataset.v);});
@@ -461,8 +465,8 @@ function bindForm(kind){
     e.preventDefault();
     const name=f.name.value.trim(), phoneRaw=f.phone.value, phone=normPhone(phoneRaw);
     let bad=false;
-    setErr(f.name,"e_n_"+kind, name.length<2 ? (bad=true,"צריך שם") : "");
-    setErr(f.phone,"e_p_"+kind, !phone ? (bad=true,"צריך מספר נייד תקין, למשל 050-1234567") : "");
+    const ne=nameErr(name); setErr(f.name,"e_n_"+kind, ne ? (bad=true,ne) : "");
+    setErr(f.phone,"e_p_"+kind, !phone ? (bad=true,"צריך מספר נייד תקין, למשל 050-8123456") : "");
     document.getElementById("e_x_"+kind).textContent = !f.consent.checked ? (bad=true,"צריך לסמן אישור כדי שנוכל לחזור אליך") : "";
     if (bad) return;
     if (f.website.value) return thanks(kind, name); // בוט
@@ -485,7 +489,18 @@ function setErr(input,id,msg){input.setAttribute("aria-invalid",msg?"true":"fals
 function normPhone(p){
   let d=String(p).replace(/[^\d+]/g,"");
   if (d.startsWith("+972")) d="0"+d.slice(4); else if (d.startsWith("972")) d="0"+d.slice(3);
-  return /^05\d{8}$/.test(d) ? d.slice(0,3)+"-"+d.slice(3) : "";
+  if (!/^05\d{8}$/.test(d)) return "";
+  const t=d.slice(3);
+  if (/^(\d)\1{6}$/.test(t) || t==="1234567" || t==="7654321") return ""; // מספר פיקטיבי
+  return d.slice(0,3)+"-"+t;
+}
+function nameErr(n){
+  n=n.trim();
+  if (!n) return "צריך שם";
+  if (/\d/.test(n)) return "שם בלי ספרות, בבקשה";
+  if (!/^[\u0590-\u05FFa-zA-Z][\u0590-\u05FFa-zA-Z '\-\.׳"]*$/.test(n)) return "רק אותיות בשם, בבקשה";
+  if ((n.match(/[\u0590-\u05FFa-zA-Z]/g)||[]).length<2 || /^(.)\1+$/.test(n.replace(/\s/g,""))) return "צריך שם מלא יותר";
+  return "";
 }
 async function send(payload){
   if (ENDPOINT.startsWith("PASTE")) { console.log("DEMO payload", payload); await new Promise(r=>setTimeout(r,500)); return; }
