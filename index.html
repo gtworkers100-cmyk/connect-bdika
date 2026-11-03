@@ -106,6 +106,15 @@ dialog::backdrop{background:rgba(20,26,60,.55)}
 .fade{animation:fade .22s ease}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.cta{margin:22px 0 10px;border-radius:18px;padding:18px 16px;background:linear-gradient(#fff,#fff) padding-box,var(--grad) border-box;border:2px solid transparent;box-shadow:0 12px 30px rgba(122,63,192,.14)}
+.cta-h{display:flex;gap:12px;align-items:flex-start;margin-bottom:6px}
+.cta-h h2{font-size:20px;margin:0 0 4px}
+.cta-h p{margin:0;color:var(--muted);font-size:15px}
+.cta-ic{flex:none;width:40px;height:40px;border-radius:12px;background:var(--grad);color:#fff;display:grid;place-items:center;font-weight:800;font-size:20px}
+.stick{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(to top,rgba(245,246,250,1) 60%,rgba(245,246,250,0));z-index:20;transition:transform .3s ease,opacity .3s ease}
+.stick .btn{max-width:588px;margin:0 auto;display:flex}
+.stick.hide{transform:translateY(110%);opacity:0;pointer-events:none}
 </style>
 </head>
 <body>
@@ -116,6 +125,8 @@ dialog::backdrop{background:rgba(20,26,60,.55)}
 <main>
   <section class="card" id="app" aria-live="polite"></section>
 </main>
+
+<div class="stick hide" id="stick" hidden><button class="btn btn-primary" type="button" id="toCta"></button></div>
 
 <footer>
   <p class="fine">Connect ביטוח ופיננסים · אורנה כהן, סוכנת ביטוח ופנסיה עצמאית<br>
@@ -172,6 +183,7 @@ const visibleQ = () => Q.filter(q => !q.when || q.when(A));
 
 /* ===== מסכים ===== */
 function show(html, focusSel){
+  const st=document.getElementById("stick"); if(st){st.classList.add("hide"); st.hidden=true;} if(typeof ctaObs!=="undefined"&&ctaObs) ctaObs.disconnect();
   $app.innerHTML = `<div class="fade">${html}</div>`;
   const f = focusSel ? $app.querySelector(focusSel) : $app.querySelector("h1,h2");
   if (f){ f.setAttribute("tabindex","-1"); f.focus({preventScroll:true}); }
@@ -371,30 +383,40 @@ function fit(a){
 
 /* ===== תוצאה ===== */
 let R=null;
+let ctaObs=null;
 function result(){
   R = score(A); track("result");
   path.push(result);
-  const L = {red:["כדאי לבדוק בהקדם","b-red",85], mid:["יש כמה דברים לשפר","b-mid",50], ok:["נראה שאת/ה במצב טוב","b-ok",14]}[R.level];
-  const top = R.finds.slice(0,3);
+  const L = {red:["כדאי לבדוק בהקדם","b-red"], mid:["יש כמה דברים לשפר","b-mid"], ok:["נראה שאת/ה במצב טוב","b-ok"]}[R.level];
+  const pos = Math.round(8 + Math.min(R.total,10)*8.4);   // מיקום לפי הציון: ימין = מצב טוב, שמאל = כדאי לבדוק
+  const top = R.finds.slice(0,3), more = R.finds.length-top.length;
   const strong = R.level!=="ok";
   show(`
     <span class="badge ${L[1]}">${L[0]}</span>
-    <h2 style="margin-top:12px">${strong?"מצאנו כמה דברים ששווה לבדוק":"התמונה הכללית טובה"}</h2>
-    <div class="meter" role="img" aria-label="מצב: ${L[0]}"><b style="right:${L[2]}%"></b></div>
+    <h2 style="margin-top:12px">${strong?`מצאנו ${R.finds.length} דברים ששווה לבדוק`:"התמונה הכללית טובה"}</h2>
+    <div class="meter" role="img" aria-label="מצב: ${L[0]}"><b style="right:${pos}%"></b></div>
     <div class="meter-l"><span>במצב טוב</span><span>כדאי לבדוק</span></div>
     ${top.length?`<ul class="finds">${top.map(x=>`<li><span><b>${esc(x[1])}</b>${esc(x[2])}</span></li>`).join("")}</ul>`:""}
+    ${more>0?`<p class="fine" style="margin-top:-6px">${more===1?"ועוד נקודה אחת":"ועוד "+more+" נקודות"} שאורנה תעבור עליהן איתך בבדיקה.</p>`:""}
     ${strong ? `
-      <h2 style="font-size:20px;margin-top:20px">רוצה שאורנה תעבור על זה איתך?</h2>
-      <p>בדיקה מלאה של התיק, בלי עלות. יוצאים עם תמונה ברורה של מה יש, מה כפול ומה חסר. פגישה במשרד, בזום או בטלפון.</p>
-      ${leadForm("main")}
+      <div class="cta" id="cta">
+        <div class="cta-h"><span class="cta-ic">✓</span><div><h2>בדיקה מלאה עם אורנה, בלי עלות</h2><p>יוצאים עם תמונה ברורה: מה יש, מה כפול ומה חסר. פגישה במשרד, בזום או בטלפון.</p></div></div>
+        ${leadForm("main")}
+      </div>
     ` : `
       <p>בכל זאת, פעם בשנה שווה לבדוק דמי ניהול ומסלול השקעה.</p>
-      <button class="link" type="button" id="soft">רוצה בכל זאת שאורנה תציץ? אפשר להשאיר פרטים</button>
-      <div id="softBox"></div>
+      <div class="cta soft" id="cta"><div class="cta-h"><span class="cta-ic">✓</span><div><h2>רוצה בכל זאת שאורנה תציץ?</h2><p>בדיקה קצרה בלי עלות ובלי התחייבות.</p></div></div>
+      <button class="btn btn-primary" type="button" id="soft">אני רוצה בדיקה</button><div id="softBox"></div></div>
     `}
     <button class="link" type="button" id="back">→ חזרה לשאלות</button>
   `);
   document.getElementById("back").onclick = goBack;
+  const cta=document.getElementById("cta"), stick=document.getElementById("stick");
+  document.getElementById("toCta").textContent=(strong?"להשאיר פרטים לבדיקה בלי עלות":"רוצה בכל זאת בדיקה?")+" ↓";
+  stick.classList.remove("hide"); stick.hidden=false;
+  document.getElementById("toCta").onclick=()=>{cta.scrollIntoView({behavior:"smooth",block:"start"}); setTimeout(()=>{const i=cta.querySelector("input[name=name]"); if(i) i.focus({preventScroll:true});},500);};
+  if(ctaObs) ctaObs.disconnect();
+  if("IntersectionObserver" in window){ const tgt=cta.querySelector("form")||cta.querySelector("#soft")||cta; ctaObs=new IntersectionObserver(es=>{es.forEach(e=>stick.classList.toggle("hide", e.isIntersecting||e.boundingClientRect.top<0));},{threshold:0.05}); ctaObs.observe(tgt); }
   if (strong) bindForm("main");
   else document.getElementById("soft").onclick = () => {
     document.getElementById("softBox").innerHTML = leadForm("soft");
