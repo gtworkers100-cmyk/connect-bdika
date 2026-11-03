@@ -106,6 +106,12 @@ footer .fine{line-height:1.6}
 dialog{border:0;border-radius:16px;max-width:520px;width:calc(100% - 32px);padding:22px}
 dialog::backdrop{background:rgba(20,26,60,.55)}
 .fade{animation:fade .22s ease}
+.nest{margin:-2px 10px 4px 0;padding:12px 10px;border-right:3px solid var(--violet);background:#FBF9FE;border-radius:12px 0 0 12px}
+.nest-r+.nest-r{margin-top:10px}
+.nest-l{display:block;font-size:15px;font-weight:600;color:var(--navy);margin-bottom:6px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{flex:1 1 0;min-width:0;white-space:nowrap;min-height:44px;padding:8px 6px;border:1.5px solid var(--line);border-radius:999px;background:#fff;font:inherit;font-size:14.5px;cursor:pointer;color:var(--navy)}
+.chip[aria-checked="true"]{border-color:var(--violet);background:var(--grad);color:#fff;font-weight:600}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
@@ -164,8 +170,7 @@ const Q = [
   {id:"family", title:"מצב משפחתי", opts:["רווק/ה","נשוי/אה או בזוגיות","גרוש/ה או אלמן/ה"],
    sub:{id:"kids", title:"כמה ילדים?", opts:["אין","1-2","3 ומעלה"]}},
   {id:"work", multi:true, none:"לא עובד/ת כרגע", title:"במה את/ה עובד/ת?", hint:"אפשר לבחור כמה. למשל שכיר/ה שיש לו/ה גם עוסק פטור.", opts:["שכיר/ה","עוסק פטור","עוסק מורשה","בעל/ת חברה בע\"מ","לא עובד/ת כרגע"],
-   sub:{id:"bizAge", when:a=>isSelf(a), title:"כמה זמן העסק פעיל?", opts:["פחות משנה","1-3 שנים","יותר מ-3 שנים"]},
-   sub2:{id:"employees", when:a=>wk(a,"עוסק מורשה")||wk(a,"בעל/ת חברה בע\"מ"), title:"יש לך עובדים?", opts:["כן","לא"]}},
+   inline:true},
   {id:"income", when:a=>!onlyNoWork(a), title:"הכנסה חודשית ממוצעת, נטו",
    hint:"לעצמאים: כמה נכנס לבנק בחודש, בערך. לא צריך מדויק.",
    opts:["עד 8,000 ₪","8,000-15,000 ₪","15,000-25,000 ₪","מעל 25,000 ₪","מעדיף/ה לא לענות"]},
@@ -248,12 +253,30 @@ function ask(i){
     clearTimeout(advTimer);
     const live = liveSubs();
     subs.forEach(s => { if (!live.includes(s)) delete A[s.id]; });
+    if (q.inline) bizSummary(A);
     if (q.id==="topics" && onlyElem()) { track("elementary"); return elementary(); }
     if (q.id==="agent" && A.agent==="יש, ואני מרוצה ממנו") { track("redline"); return redline(); }
     ask(i+1);
   };
   // עדכון במקום, בלי לרנדר את כל המסך
+  const syncNest = () => {
+    if (!q.inline) return;
+    const sel = bizSel(A);
+    $app.querySelectorAll("[data-nest]").forEach(el=>{ if(!sel.includes(el.dataset.nest)) el.remove(); });
+    sel.forEach(t=>{
+      if ($app.querySelector(`[data-nest="${CSS.escape(t)}"]`)) return;
+      const btn=$app.querySelector(`.opt[data-q="${q.id}"][data-v="${CSS.escape(t)}"]`); if(!btn) return;
+      const tmp=document.createElement("div"); tmp.innerHTML=nestHtml(t); const el=tmp.firstElementChild;
+      btn.after(el);
+      el.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
+        A.biz=A.biz||{}; const d=A.biz[c.dataset.t]=A.biz[c.dataset.t]||{}; d[c.dataset.f]=c.dataset.v;
+        el.querySelectorAll(`.chip[data-f="${c.dataset.f}"]`).forEach(x=>x.setAttribute("aria-checked", x===c));
+        document.getElementById("next").disabled = !ready(q, liveSubs());
+      });
+    });
+  };
   const sync = (changedId) => {
+    syncNest();
     const live = liveSubs();
     const box = document.getElementById("subs");
     // הסרת תת-שאלות שכבר לא רלוונטיות
@@ -292,12 +315,34 @@ function ask(i){
     sync(id);
   };
   $app.querySelectorAll(".opt").forEach(b => b.onclick = () => pick(b));
+  syncNest();
   document.getElementById("next").onclick = goNext;
   document.getElementById("back").onclick = () => { clearTimeout(advTimer); goBack(); };
 }
 function ready(q, live){
   const ok = x => x.multi ? (A[x.id]||[]).length>0 : A[x.id]!==undefined;
-  return ok(q) && live.every(ok);
+  return ok(q) && live.every(ok) && (!q.inline || bizOk(A));
+}
+// פרטי עסק לכל סוג עסק שסומן, נפתחים מתחת לאפשרות עצמה
+const BIZ = {"עוסק פטור":{short:"עוסק פטור",lbl:"כמה זמן העוסק הפטור פעיל?",emp:false},
+             "עוסק מורשה":{short:"עוסק מורשה",lbl:"כמה זמן העוסק המורשה פעיל?",emp:true},
+             "בעל/ת חברה בע\"מ":{short:"חברה",lbl:"כמה זמן החברה פעילה?",emp:true}};
+const BIZ_AGES = ["פחות משנה","1-3 שנים","מעל 3 שנים"];
+function bizSel(a){ return (a.work||[]).filter(x=>BIZ[x]); }
+function bizOk(a){ return bizSel(a).every(t=>{const d=(a.biz||{})[t]||{}; return d.age && (!BIZ[t].emp || d.emp);}); }
+function bizSummary(a){
+  const sel=bizSel(a); a.biz=a.biz||{};
+  Object.keys(a.biz).forEach(t=>{ if(!sel.includes(t)) delete a.biz[t]; });
+  if (!sel.length){ delete a.bizAge; delete a.bizMax; delete a.employees; return; }
+  a.bizAge = sel.map(t=>BIZ[t].short+": "+a.biz[t].age).join(" · ");
+  a.bizMax = BIZ_AGES[Math.max(...sel.map(t=>BIZ_AGES.indexOf(a.biz[t].age)))];
+  const em = sel.filter(t=>BIZ[t].emp);
+  if (em.length) a.employees = em.some(t=>a.biz[t].emp==="כן") ? "כן" : "לא"; else delete a.employees;
+}
+function nestHtml(t){
+  const d=(A.biz||{})[t]||{}, k=Object.keys(BIZ).indexOf(t);
+  const row=(f,lbl,opts)=>`<div class="nest-r"><span class="nest-l" id="nl_${f}${k}">${lbl}</span><div class="chips" role="radiogroup" aria-labelledby="nl_${f}${k}">${opts.map(o=>`<button type="button" class="chip" role="radio" data-t="${esc(t)}" data-f="${f}" data-v="${esc(o)}" aria-checked="${d[f]===o}">${esc(o)}</button>`).join("")}</div></div>`;
+  return `<div class="nest fade" data-nest="${esc(t)}">${row("age",BIZ[t].lbl,BIZ_AGES)}${BIZ[t].emp?row("emp","יש עובדים?",["כן","לא"]):""}</div>`;
 }
 function goBack(){
   path.pop();                      // המסך הנוכחי
@@ -378,7 +423,7 @@ function fit(a){
   if (a.age==="עד 24") check.push("מתחת ל-25");
   if (!me) check.push(notWorking?"לא עובד/ת":"לא ציין/ה הכנסה");
   else if (me<=2 && sp<=1) check.push("הכנסה עד 15,000 במשק הבית");
-  if (a.bizAge==="פחות משנה") check.push("עסק פחות משנה");
+  if (a.bizMax==="פחות משנה") check.push("עסק פחות משנה");
   if (a.agent==="לא יודע/ת") check.push("לא ברור אם יש סוכן");
   if (check.length) return {fit:"לבדיקה", why:[...check,...notes].join(" · ")};
   return {fit:"מתאים", why:notes.join(" · ")};
