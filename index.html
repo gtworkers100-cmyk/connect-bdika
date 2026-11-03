@@ -92,7 +92,9 @@ label.l{display:block;font-weight:500;margin-bottom:6px}
 .in[aria-invalid="true"]{border-color:var(--warn)}
 .err{color:var(--warn);font-size:14px;margin-top:4px;min-height:0}
 .chk{display:flex;gap:10px;align-items:flex-start;font-size:15px;margin:14px 0}
-.chk input{width:22px;height:22px;margin-top:2px;flex:none;accent-color:var(--violet)}
+.chk{cursor:pointer;background:#F7F2FD;border-radius:12px;padding:12px}
+.chk input{width:22px;height:22px;margin-top:2px;flex:none;accent-color:var(--violet);cursor:pointer}
+.btn-primary[disabled]{opacity:.4;filter:grayscale(.3)}
 .seg{display:flex;gap:8px;flex-wrap:wrap}
 .seg .opt{width:auto;flex:1 1 30%;justify-content:center;min-height:48px;padding:10px}
 .seg .opt .box{display:none}
@@ -442,12 +444,16 @@ function leadForm(kind){
       ? "אני מאשר/ת להעביר את הפרטים שלי לסוכן ביטוח אלמנטרי שעובד עם Connect, כדי שיחזור אליי."
       : "אני מאשר/ת ש-Connect ביטוח ופיננסים תחזור אליי לגבי הבדיקה. הפרטים לא מועברים לאף אחד אחר."}</span></label>
     <div class="err" id="e_x_${kind}"></div>
-    <button class="btn btn-primary" type="submit">${elem?"שליחה":"אני רוצה בדיקה בלי עלות"}</button>
+    <button class="btn btn-primary" type="submit" disabled>${elem?"שליחה":"אני רוצה בדיקה בלי עלות"}</button>
+    <p class="fine need-ok" style="text-align:center;margin:8px 0 0">כדי לשלוח, מסמנים את האישור למעלה</p>
     <p class="fine" style="margin-top:8px">בלחיצה את/ה מאשר/ת את <button class="link fine" type="button" onclick="document.getElementById('privacy').showModal()">מדיניות הפרטיות</button>.</p>
   </form>`;
 }
 function bindForm(kind){
   const f = document.getElementById("f_"+kind);
+  const sb=f.querySelector('button[type=submit]'), hint=f.querySelector('.need-ok');
+  const syncOk=()=>{sb.disabled=!f.consent.checked; if(hint) hint.style.display=f.consent.checked?'none':'';};
+  f.consent.addEventListener('change',syncOk); syncOk();
   const extra = {when:"", needs:[]};
   f.querySelectorAll("[data-one] .opt").forEach(b=>b.onclick=()=>{f.querySelectorAll("[data-one] .opt").forEach(x=>x.setAttribute("aria-checked","false"));b.setAttribute("aria-checked","true");extra.when=b.dataset.v;});
   f.querySelectorAll("[data-multi] .opt").forEach(b=>b.onclick=()=>{const on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);extra.needs=on?[...extra.needs,b.dataset.v]:extra.needs.filter(x=>x!==b.dataset.v);});
