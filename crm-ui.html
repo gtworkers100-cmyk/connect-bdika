@@ -149,6 +149,38 @@ table.lt td.src{color:var(--muted);font-size:13px}
 table.lt .acts{justify-content:flex-start!important;gap:6px}
 table.lt td.nm{border-right-width:3px!important}
 table.lt thead th{border-bottom:1px solid var(--line)}
+
+.tw{border:1px solid #E6E8F1;box-shadow:0 6px 20px rgba(34,44,95,.07)!important}
+.tbar{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid #E6E8F1;background:#fff}
+.tbar b{font-size:16px;color:var(--navy)}
+.tbar span{font-size:13px;color:var(--muted);background:#F1F2F8;border-radius:999px;padding:2px 10px}
+table.lt{min-width:1060px!important}
+table.lt thead th{background:var(--navy)!important;color:#fff!important;font-weight:600;font-size:13px;letter-spacing:.2px;text-align:center!important;padding:12px 8px!important;border-left:1px solid rgba(255,255,255,.08);user-select:none}
+table.lt thead th:first-child{text-align:right!important;padding-right:18px!important}
+table.lt th.sortable{cursor:pointer}
+table.lt th.sortable:hover,table.lt th.sortable.on{background:#2B3672!important}
+table.lt th .arr{font-style:normal;font-size:10px;opacity:.55;margin-inline-start:6px}
+table.lt th.on .arr{opacity:1;color:var(--teal)}
+table.lt td{text-align:center!important;padding:0 10px!important;height:64px!important;border-left:1px solid #F0F1F6}
+table.lt td:last-child,table.lt th:last-child{border-left:0}
+table.lt tbody tr:nth-child(even) td{background:#FAFBFE}
+table.lt tbody tr:hover td{background:#F3F1FC!important}
+table.lt td.nm{text-align:right!important;padding-right:14px!important;border-right:4px solid var(--line)}
+.who{display:flex;align-items:center;gap:10px;min-width:0}
+.av{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;color:#fff;background:#B9BED6}
+.av.f-matim{background:linear-gradient(135deg,#00C2B0,#0E9C8C)}.av.f-livdika{background:linear-gradient(135deg,#F2C24F,#D99A1B)}.av.f-low{background:#B9BED6}
+.av:not([class*="f-"]){background:var(--grad)}
+.wn{min-width:0;display:flex;flex-direction:column;line-height:1.3}
+.wn b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14.5px}
+.wn small{color:var(--muted);font-size:12.5px;text-align:right}
+.b.mini{font-size:10.5px;padding:1px 6px;flex:none}
+.chs{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-height:52px;overflow:hidden}
+.ch{background:#F1F2F8;color:#3A4370;border-radius:6px;padding:1px 7px;font-size:12px;white-space:nowrap}
+table.lt td.tm b{display:block;font-weight:600;font-size:13.5px}
+table.lt td.tm small{display:block;color:var(--muted);font-size:12px}
+table.lt td.src{font-size:13px;color:#3A4370}
+.dash{color:#C3C7D6}
+table.lt .acts{justify-content:center!important}
 </style>
 </head>
 <body>
@@ -273,6 +305,9 @@ function filt(all){
     return true;
   });
 }
+let sortK='date', sortD=-1;
+const FITO={'מתאים':0,'לבדיקה':1,'לא מתאים':2}, LVLO={'כדאי לבדוק בהקדם':0,'יש מה לשפר':1,'במצב טוב':2};
+function sortRows(rows){const k=sortK,d=sortD;const v=r=>k==='name'?String(r['שם']||''):k==='fit'?(FITO[r['התאמה']]??9):k==='lvl'?(LVLO[r['מצב בבדיקה']]??9):k==='src'?srcName(r['מקור']):k==='st'?STATUSES.indexOf(r['סטטוס']):String(r['תאריך']||'');return rows.slice().sort((a,b)=>{const x=v(a),y=v(b);return (x>y?1:x<y?-1:0)*d;});}
 let view=(()=>{try{return localStorage.getItem('crmView')||'cards'}catch(e){return 'cards'}})();
 function list(all){
   const rows=filt(all);
@@ -283,7 +318,10 @@ function list(all){
   if(view==='list'){
     el.className='tw fadein';
     const crmT=tab!=='elem';
-    el.innerHTML=`<table class="lt">${crmT?'<colgroup><col style=\"width:16%\"><col style=\"width:8%\"><col style=\"width:12%\"><col style=\"width:20%\"><col style=\"width:11%\"><col style=\"width:8%\"><col style=\"width:14%\"><col style=\"width:11%\"></colgroup>':'<colgroup><col style=\"width:20%\"><col style=\"width:14%\"><col style=\"width:22%\"><col style=\"width:12%\"><col style=\"width:8%\"><col style=\"width:13%\"><col style=\"width:11%\"></colgroup>'}<thead><tr><th>שם</th>${crmT?'<th>התאמה</th><th>מצב בבדיקה</th>':'<th>מה לבטח</th>'}<th>פרטים</th><th>מקור</th><th>נכנס</th><th>סטטוס</th><th>פעולות</th></tr></thead><tbody>${rows.map(rowHtml).join('')}</tbody></table>`;
+    const H=crmT?[['name','שם',22],['fit','התאמה',9],['lvl','מצב בבדיקה',12],['','פרופיל',21],['src','מקור',12],['date','נכנס',9],['st','סטטוס',15]]:[['name','שם',24],['','מה לבטח',18],['','עיר',14],['src','מקור',14],['date','נכנס',10],['st','סטטוס',20]];
+    const head=H.map(h=>`<th style="width:${h[2]}%" ${h[0]?`data-sort="${h[0]}" class="sortable ${sortK===h[0]?'on':''}"`:''}>${h[1]}${h[0]?`<i class="arr">${sortK===h[0]?(sortD>0?'▲':'▼'):'↕'}</i>`:''}</th>`).join('')+'<th style="width:11%"></th>';
+    el.innerHTML=`<div class="tbar"><b>${tab==='elem'?'פניות אלמנטרי':tab==='low'?'לא מתאימים':'לידים'}</b><span>${rows.length} מתוך ${all.length}</span></div><table class="lt"><thead><tr>${head}</tr></thead><tbody>${sortRows(rows).map(rowHtml).join('')}</tbody></table>`;
+    el.querySelectorAll('th.sortable').forEach(th=>th.onclick=()=>{const k=th.dataset.sort;if(sortK===k)sortD=-sortD;else{sortK=k;sortD=k==='date'?-1:1;}list(all);});
   } else { el.className='list fadein'; el.innerHTML=rows.map(card).join(''); }
   el.querySelectorAll('[data-row]').forEach(c=>{
     const r=rows.find(x=>x._row==c.dataset.row);
@@ -317,16 +355,21 @@ function card(r){
     </div>
   </article>`;
 }
+function initials(n){const p=String(n||'').trim().split(/\s+/);return ((p[0]||'')[0]||'')+((p[1]||'')[0]||'');}
+function chips(r){
+  if(tab==='elem') return '';
+  const kids=r['ילדים']&&r['ילדים']!=='אין'?r['ילדים']+' ילדים':'';
+  return [r['גיל']&&('גיל '+r['גיל']),sh(r['מצב משפחתי']),kids,sh(r['תעסוקה']),sh(r['הכנסה'])].filter(Boolean).map(t=>`<span class="ch">${esc(t)}</span>`).join('');
+}
 function rowHtml(r){
-  const x=bits(r);
+  const x=bits(r), d=new Date(r['תאריך']);
   return `<tr class="${x.cls}" data-row="${r._row}">
-    <td class="nm" title="${esc(r['שם'])}">${esc(r['שם'])}${isB2B(r)?' <span class="b b2b" style="font-size:11px;padding:1px 6px">B2B</span>':''}<small>${esc(r['טלפון'])}</small></td>
-    ${tab!=='elem'?`<td>${x.fitB}</td><td>${x.lvlB}</td>`:`<td>${esc(r['מה לבטח']||'')}</td>`}
-    <td class="sm" title="${esc(x.summary)}">${esc(x.summary)}</td>
-    <td class="src" title="${esc(r['מקור']||'')}">${esc(srcName(r['מקור']))}</td>
-    <td title="${esc(new Date(r['תאריך']).toLocaleString('he-IL'))}">${ago(r['תאריך'])}</td>
-    <td>${x.sel}</td>
-    <td><div class="acts"><a class="btn ic wa" href="${waLink(r)}" target="_blank" rel="noopener" title="וואטסאפ" aria-label="וואטסאפ">${WA_SVG}</a><button class="btn ghost more" type="button">פרטים</button></div></td>
+    <td class="nm"><div class="who"><span class="av ${x.cls}">${esc(initials(r['שם']))}</span><div class="wn"><b title="${esc(r['שם'])}">${esc(r['שם'])}</b><small dir="ltr">${esc(r['טלפון'])}</small></div>${isB2B(r)?'<span class="b b2b mini">B2B</span>':''}</div></td>
+    ${tab!=='elem'?`<td class="c">${x.fitB||'<span class="dash">-</span>'}</td><td class="c">${x.lvlB||'<span class="dash">-</span>'}</td><td class="c"><div class="chs" title="${esc(x.summary)}">${chips(r)}</div></td>`:`<td class="c">${esc(r['מה לבטח']||'-')}</td><td class="c">${esc(r['עיר']||'-')}</td>`}
+    <td class="c src" title="${esc(r['מקור']||'')}">${esc(srcName(r['מקור'])||'-')}</td>
+    <td class="c tm" title="${esc(d.toLocaleString('he-IL'))}"><b>${ago(r['תאריך'])}</b><small>${d.toLocaleDateString('he-IL',{day:'numeric',month:'numeric'})}</small></td>
+    <td class="c">${x.sel}</td>
+    <td class="c"><div class="acts"><a class="btn ic wa" href="${waLink(r)}" target="_blank" rel="noopener" title="וואטסאפ" aria-label="וואטסאפ">${WA_SVG}</a><button class="btn ghost more" type="button">פרטים</button></div></td>
   </tr>`;
 }
 function details(r){
