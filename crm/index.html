@@ -216,7 +216,9 @@ let D=null, tab='crm', fFit='הכל', fStatus='', fSrc='', q='', kpiF='';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const SRCMAP={"fb-smallbusinessesaregrowing": "עסקים קטנים צומחים", "fb-957311694362184": "פשפשוק - עסקים", "fb-entrepreneurs.israel": "יזמים למען יזמים", "fb-231569131328090": "התאחדות העצמאים", "fb-1598771583735880": "יזמים ומשקיעים - רעיונות וחיבורים עסקיים", "fb-582348725223952": "יזמים צעירים", "fb-KsharimBiz": "קשרים - עסקים קטנים ובעלי מקצוע", "fb-businesssribak": "בעלי עסקים מדברים שיווק, מיתוג ופרסום", "fb-906278559526141": "הטייקונים: עצמאים, בעלי עסקים וחברות", "fb-1752673784886479": "נשים עסקים והשראה", "fb-freelancerim": "עצמאים בישראל", "fb-954678227994700": "קבלנים שיפוצניקים ויזמים", "fb-1382003495801781": "קבלני ענף הבנייה ושיפוצים - הצעות מחיר ומכרזים", "fb-630235466131695": "ענף הבנייה - קבלנים יזמים ופועלים בכל הארץ", "fb-2210028712553194": "ידע שווה כסף - לי זה עולה יותר", "fb-lazy.investor.israel": "השקעות לעצלנים", "fb-mamreem": "ממריאים לחופש כלכלי", "fb-mashkanta1": "משכנתא בישראל - הפורום הגדול ברשת", "fb-israel.passive.investors": "להשקיע נכון - קהילת המשקיעים הפאסיביים", "fb-httpspln.co.il": "משכנתא - קבוצת התייעצות ומידע", "fb-333238607094709": "משכנתא - קבוצה להתייעצות, שאלות ותשובות", "fb-287300104753932": "תשאל סוכן ביטוח", "fb-2889221661094581": "כלכלת משפחה - משתפים, מתייעצים וצומחים יחד", "fb-577276059281790": "טיפים בנושא פיננסים, חופש כלכלי, חסכונות", "fb-inurance": "שאלות ותשובות - הכל על ביטוח", "fb-savey": "שאלות ותשובות על פנסיה, ביטוח וחיסכון", "fb-284562504944889": "פרישה | פנסיה | פיצויים | כלכלת פרישה", "fb-bahitech": "משכורות בהייטקס", "fb-hitechproblems": "צרות בהייטק - הקבוצה", "fb-israel.hightech": "משרות הייטק בין חברים", "fb-926122620829127": "משרות הייטק שוות", "fb-609641652802760": "משרות בהייטק ובסטארט אפים", "fb-569017689842159": "מנהלי מוצר ישראל - Product Managers Israel", "fb-439327062818235": "הדיגיטליים: מעצבים, מפתחים ומשווקים", "fb-MoneyTalksIL": "מדברים על כסף - השקעות, פנסיה, שוק ההון", "fb-396641690362272": "מפתחים בישראל - R&D Israel", "fb-qablog": "בדיקות תוכנה QA", "fb-109092007206966": "משרות פרודקט בין חברים", "fb-527371684110657": "קהילת בודקי תוכנה (QA) בישראל", "fb-making.software": "עושים תוכנה - קהילת מפתחים ומפתחות", "fb-904079522941454": "מפתחים מחוץ לקופסה", "fb-1866682600754410": "יאללה, הייטקיסטיות!", "fb-5823469073": "הייטק בישראל", "fb-1609078399328679": "פרסום חינם שדרות נתיבות קרית גת אופקים אשקלון", "fb-1227634734279389": "קרית-גת העיר שלנו", "wa-atzmaim": "וואטסאפ עצמאים", "wa-hitech": "וואטסאפ הייטק", "ישיר": "כניסה ישירה"};
-function srcName(c){if(!c)return'';return SRCMAP[c]||String(c).replace(/^בדיקה-/,'בדיקה: ');}
+let PM={};
+function isPartner(c){return /^(rh|sh|pt)-/.test(String(c||''));}
+function srcName(c){if(!c)return'';if(PM[c])return'רו"ח: '+PM[c]['שם'];return SRCMAP[c]||String(c).replace(/^בדיקה-/,'בדיקה: ');}
 function fixVal(v){if(typeof v==='string'&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(v)){const d=new Date(v);return d.getDate()+'-'+(d.getMonth()+1);}return v;}
 const SHORT={'נשוי/אה או בזוגיות':'בזוגיות','גרוש/ה או אלמן/ה':'גרוש/ה','עצמאי/ת, עוסק מורשה':'עוסק מורשה','עצמאי/ת, עוסק פטור':'עוסק פטור','בעל/ת חברה בע"מ':'בעל/ת חברה','לא עובד/ת כרגע':'לא עובד/ת','עד 8,000 ₪':'עד 8K','8,000-15,000 ₪':'8K-15K','15,000-25,000 ₪':'15K-25K','מעל 25,000 ₪':'מעל 25K','מעדיף/ה לא לענות':''};
 const sh=v=>SHORT[v]!=null?SHORT[v]:v;
@@ -245,8 +247,9 @@ function loginScreen(msg){
     .catch(()=>{$('#lf button').textContent='כניסה';$('.lerr').textContent='אין חיבור. נסו שוב.';});};
 }
 function got(d,first){
-  ['crm','low','elem'].forEach(t=>(d[t]||[]).forEach(r=>Object.keys(r).forEach(k=>{if(k!=='תאריך')r[k]=fixVal(r[k]);})));
+  ['crm','low','elem'].forEach(t=>(d[t]||[]).forEach(r=>Object.keys(r).forEach(k=>{if(k!=='תאריך'&&k!=='תאריך לקוח'&&k!=='שולם לשותף')r[k]=fixVal(r[k]);})));
   $('#refresh').style.display='';$('#sheet').style.display='';$('#logout').style.display='';
+  PM={};(d.partners||[]).forEach(p=>{PM[p['קוד']]=p;});
   const wasFirst=!D; D=d; $('#sheet').href=d.url;
   if(wasFirst||!$('.kpis')) render(); else {chrome(); body(); toast('עודכן');}
 }
@@ -283,7 +286,7 @@ function render(){
     ${kp('client','',k.client,'לקוחות')}
   </div>
   <div class="tabs" role="tablist">
-    ${tb('crm','לידים',crm.length)}${tb('elem','אלמנטרי',D.elem.length)}${tb('low','לא מתאימים',D.low.length)}${tb('ev','מדידה לפי מקור','')}
+    ${tb('crm','לידים',crm.length)}${tb('elem','אלמנטרי',D.elem.length)}${tb('low','לא מתאימים',D.low.length)}${tb('ev','מדידה לפי מקור','')}${tb('pt','שותפים ותשלום','')}
   </div>
   <div id="body"></div>`;
   $('#app').innerHTML=html;
@@ -304,6 +307,7 @@ function tb(id,l,n){return `<button class="tab ${tab===id?'on':''}" data-t="${id
 
 function body(){
   if(tab==='ev') return measure();
+  if(tab==='pt') return partners();
   const all=rowsFor(tab);
   const srcs=[...new Set(all.map(r=>r['מקור']).filter(Boolean))];
   const sts=tab==='elem'?ELEM_ST:STATUSES;
@@ -421,18 +425,20 @@ function details(r){
     <dl class="grid">${keys.filter(k=>r[k[1]]!==''&&r[k[1]]!=null).map(k=>`<dt>${k[0]}</dt><dd>${esc(r[k[1]])}</dd>`).join('')}</dl>
     <div class="f">
       ${tab!=='elem'?`<label>תאריך ושעת פגישה</label><input class="meet" type="datetime-local" value="${esc(String(r['תאריך פגישה']||'').replace(' ','T').slice(0,16))}">`:''}
+      ${tab!=='elem'?`<label>פרמיה חודשית, חיים + בריאות (₪)</label><input class="prem" type="number" min="0" step="1" inputmode="numeric" value="${esc(r['פרמיה חודשית']||'')}" placeholder="ממלאים כשהליד הופך ללקוח">`:''}
+      ${tab!=='elem'&&isPartner(r['מקור'])?`<label>שולם לשותף (${esc(srcName(r['מקור']))})</label><input class="paid" type="date" value="${esc(String(r['שולם לשותף']||'').slice(0,10))}">${r['תאריך לקוח']?`<p class="note" style="margin:4px 0 0">הפך ללקוח: ${esc(new Date(r['תאריך לקוח']).toLocaleDateString('he-IL'))}</p>`:''}`:''}
       <label>הערות</label><textarea class="notes">${esc(r['הערות']||'')}</textarea>
     </div>
     <div class="acts" style="margin-top:10px"><button class="btn prim save" type="button">שמירה</button><a class="btn wa" href="${waLink(r)}" target="_blank" rel="noopener">וואטסאפ</a><a class="btn call" href="tel:${digits(r['טלפון'])}">${esc(r['טלפון'])}</a></div>
    </div>`;
   d.querySelector('.hd button').onclick=()=>d.close();
-  d.querySelector('.save').onclick=()=>{const ch={'הערות':d.querySelector('.notes').value};const m=d.querySelector('.meet');if(m)ch['תאריך פגישה']=m.value?m.value.replace('T',' '):'';save(r,ch,null,()=>d.close());};
+  d.querySelector('.save').onclick=()=>{const ch={'הערות':d.querySelector('.notes').value};const m=d.querySelector('.meet');if(m)ch['תאריך פגישה']=m.value?m.value.replace('T',' '):'';const pr=d.querySelector('.prem');if(pr)ch['פרמיה חודשית']=pr.value;const pd=d.querySelector('.paid');if(pd)ch['שולם לשותף']=pd.value;save(r,ch,null,()=>d.close());};
   d.showModal();
 }
 function save(r,ch,c,done,fail){
   api({kind:'crm_update',tab,row:r._row,phone:r['טלפון'],changes:ch}).then(res=>{
     if(!res.ok){toast(res.error==='auth'?'צריך להיכנס מחדש':(res.error||'השמירה נכשלה'));if(fail)fail();return;}
-    Object.assign(r,ch); toast('נשמר'); if(done)done();
+    Object.assign(r,ch,res.set||{}); toast(ch['סטטוס']==='לקוח'&&isPartner(r['מקור'])&&!r['פרמיה חודשית']?'נשמר. לקוח של שותף: להזין פרמיה חודשית בפרטים':'נשמר'); if(done)done();
     if(c&&'סטטוס' in ch){ const stillOk=filt([r]).length; if(!stillOk){c.style.transition='opacity .25s,transform .25s';c.style.opacity='0';c.style.transform='scale(.97)';setTimeout(()=>c.remove(),260);} chrome(); }
   }).catch(()=>{toast('השמירה נכשלה. בדקו חיבור.');if(fail)fail();});
 }
@@ -448,6 +454,30 @@ function measure(){
    ${rows.length?`<div style="overflow-x:auto"><table class="m"><thead><tr><th>מקור</th><th>נכנסו לאתר</th><th>התחילו</th><th>הגיעו לתוצאה</th><th>מרוצים מהסוכן</th><th>אלמנטרי</th><th>השאירו פרטים</th><th>מתאימים</th><th>המרה (מהתחלה)</th></tr></thead><tbody>
    ${rows.map(([s,v])=>`<tr><td title="${esc(s)}">${esc(srcName(s))}</td><td>${v.view}</td><td>${v.start}</td><td>${v.result}</td><td>${v.redline}</td><td>${v.elementary}</td><td>${v.leads}</td><td>${v.matim}</td><td>${pct(v.leads,v.start)}</td></tr>`).join('')}
    </tbody></table></div>`:'<div class="empty">עוד אין נתונים</div>'}`;
+}
+function partners(){
+  const all=D.crm.concat(D.low);
+  const mk=d=>{const x=new Date(d);return isNaN(x)?'':x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0');};
+  const now=mk(new Date());
+  const months=[...new Set([now].concat(all.filter(r=>r['תאריך לקוח']).map(r=>mk(r['תאריך לקוח']))))].filter(Boolean).sort().reverse();
+  if(!partners.m||months.indexOf(partners.m)<0) partners.m=now;
+  const M=partners.m, mName=m=>{const [y,mo]=m.split('-');return new Date(+y,+mo-1,1).toLocaleDateString('he-IL',{month:'long',year:'numeric'});};
+  const S={};
+  all.filter(r=>isPartner(r['מקור'])).forEach(r=>{const c=r['מקור'];const v=S[c]=S[c]||{leads:0,meet:0,clients:0,mc:[],prem:0,paid:0,miss:0};
+    v.leads++; if(/נקבעה|חתם|התקיימה|לקוח/.test(r['סטטוס']))v.meet++; if(r['סטטוס']==='לקוח')v.clients++;
+    if(r['סטטוס']==='לקוח'&&r['תאריך לקוח']&&mk(r['תאריך לקוח'])===M){v.mc.push(r);const pr=Number(r['פרמיה חודשית'])||0;if(!pr)v.miss++;v.prem+=pr;if(r['שולם לשותף'])v.paid++;}});
+  const rows=Object.entries(S).sort((a,b)=>b[1].mc.length-a[1].mc.length||b[1].leads-a[1].leads);
+  const tot=rows.reduce((t,[,v])=>t+v.prem*2,0), nf=n=>Number(n).toLocaleString('he-IL');
+  $('#body').innerHTML=`<div class="bar fadein"><label for="pm" style="font-weight:700">חודש:</label><select id="pm">${months.map(m=>`<option value="${m}" ${m===M?'selected':''}>${mName(m)}</option>`).join('')}</select></div>
+   <p class="note fadein">כל ליד שהגיע מקישור אישי של שותף (rh-...) נספר כאן. התשלום לשותף: 2 פרמיות חודשיות (חיים + בריאות) על כל ליד שהפך ללקוח בחודש שנבחר. את הפרמיה ממלאים בפרטי הליד. ${Object.keys(PM).length} שותפים רשומים.</p>
+   ${rows.length?`<div style="overflow-x:auto"><table class="m"><thead><tr><th>שותף</th><th>לידים</th><th>פגישות</th><th>לקוחות (סה"כ)</th><th>לקוחות ב${esc(mName(M))}</th><th>פרמיות החודש</th><th>לתשלום</th><th>שולם</th><th></th></tr></thead><tbody>
+   ${rows.map(([c,v])=>`<tr><td><button class="btn ghost pf" data-c="${esc(c)}" title="${esc(c)}">${esc(srcName(c))}</button></td><td>${v.leads}</td><td>${v.meet}</td><td>${v.clients}</td><td>${v.mc.length}</td><td>${nf(v.prem)} ₪${v.miss?` <span class="b" title="לקוחות בלי פרמיה">חסרה פרמיה ל-${v.miss}</span>`:''}</td><td><b>${nf(v.prem*2)} ₪</b></td><td>${v.mc.length?v.paid+'/'+v.mc.length:'-'}</td><td>${v.mc.length?`<button class="btn ghost cp" data-c="${esc(c)}">העתקת דוח</button>`:''}</td></tr>`).join('')}
+   </tbody><tfoot><tr><td colspan="6"><b>סה"כ לתשלום ב${esc(mName(M))}</b></td><td><b>${nf(tot)} ₪</b></td><td colspan="2"></td></tr></tfoot></table></div>`:'<div class="empty">עוד אין לידים מקישורים של שותפים</div>'}`;
+  $('#pm').onchange=e=>{partners.m=e.target.value;partners();};
+  document.querySelectorAll('.pf').forEach(b=>b.onclick=()=>{tab='crm';fSrc=b.dataset.c;kpiF='';fStatus='';chrome();body();});
+  document.querySelectorAll('.cp').forEach(b=>b.onclick=()=>{const c=b.dataset.c,v=S[c],p=PM[c]||{};
+    const t=`שלום ${p['איש קשר']||p['שם']||''},\nסיכום שיתוף הפעולה לחודש ${mName(M)}:\nלקוחות שהגיעו מכם והצטרפו: ${v.mc.length}\n`+v.mc.map(r=>`- ${String(r['שם']||'').split(' ')[0]}: פרמיה חודשית ${nf(Number(r['פרמיה חודשית'])||0)} ₪`).join('\n')+`\nסה"כ לתשלום (2 פרמיות): ${nf(v.prem*2)} ₪\nתודה על שיתוף הפעולה!\nאורנה, Connect ביטוח ופיננסים`;
+    (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('הדוח הועתק')).catch(()=>{prompt('העתיקו את הדוח:',t);});});
 }
 $('#refresh').onclick=load;
 $('#logout').onclick=()=>{KEY='';D=null;try{localStorage.removeItem('crmKey')}catch(e){};loginScreen();};

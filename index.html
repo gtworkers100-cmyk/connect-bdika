@@ -186,7 +186,17 @@ html.dk a{color:var(--hi)}
 <script>
 /* ===== הגדרות ===== */
 const ENDPOINT = "https://script.google.com/macros/s/AKfycbypzi4FRLud1UdcSTAlpBtVGShl1FPh4pEiMuu9Grhrr5oipDqoin5WVV_OKhRKnr5t/exec"; // כתובת ה-Web App של Apps Script
-const SRC = (new URLSearchParams(location.search).get("src") || "ישיר").slice(0,60);
+// מקור: מהקישור. קוד שותף (rh-...) נשמר בדפדפן 90 יום, כדי שגם מי שחוזר מאוחר יותר ישויך לשותף שהפנה אותו
+const SRC = (function(){
+  const u = (new URLSearchParams(location.search).get("src") || "").slice(0,60), K = "cn_src", DAY = 864e5, isP = s => /^[a-z]{1,4}-/.test(s) && /^(rh|sh|pt)-/.test(s);
+  let st = null; try { st = JSON.parse(localStorage.getItem(K) || "null"); } catch(e){}
+  const fresh = st && st.s && (Date.now() - st.t) < 90*DAY;
+  if (u) {
+    if (isP(u) || !(fresh && isP(st.s))) { try { localStorage.setItem(K, JSON.stringify({s:u, t:Date.now()})); } catch(e){} }
+    return (fresh && isP(st.s) && !isP(u)) ? st.s : u;
+  }
+  return fresh ? st.s : "ישיר";
+})();
 
 /* ===== מצב ===== */
 const A = {};            // תשובות
