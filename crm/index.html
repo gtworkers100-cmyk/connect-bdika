@@ -494,9 +494,8 @@ function partners(){
       rcodes.map(c=>{const v=rv(c);return `- ${pName(c)}: ${v.n} פניות, ${v.meet} פגישות, ${v.join} הצטרפו`+(mult(c)>0?`, לתשלום ${nf(pay(c))} ₪`:', ללא תגמול');}).join('\n');};
   const repHtml=`<h3 class="fadein" style="margin:6px 0">דוחות חודשיים, ${esc(mName(M))}</h3>
    <div class="bar fadein"><button class="btn prim" id="ornaRep" type="button">${WA_SVG} דוח כללי לאורנה</button></div>
-   ${rcodes.length?`<div style="overflow-x:auto"><table class="m"><thead><tr><th>שותף</th><th>נכנסו</th><th>רלוונטיים</th><th>לא רלוונטיים</th><th>פגישות</th><th>הצטרפו</th><th>לא הצטרפו</th><th>תגמול</th><th></th></tr></thead><tbody>
-   ${rcodes.map(c=>{const v=rv(c);return `<tr><td>${esc(pName(c))}</td><td>${v.n}</td><td>${v.rel}</td><td>${v.irr}</td><td>${v.meet}</td><td>${v.join}</td><td>${v.n-v.join}</td><td>${mult(c)>0?nf(pay(c))+' ₪':'ללא תמורה'}</td>
-     <td><button class="btn ghost prep" data-c="${esc(c)}" type="button">${WA_SVG} שליחת דוח</button></td></tr>`;}).join('')}</tbody></table></div>`:'<div class="empty">עוד אין שותפים פעילים</div>'}
+   ${rcodes.length?`<div style="overflow-x:auto"><table class="m"><thead><tr><th>שותף</th><th>נכנסו</th><th>רלוונטיים</th><th>לא רלוונטיים</th><th>פגישות</th><th>הצטרפו</th><th>לא הצטרפו</th><th>תגמול</th></tr></thead><tbody>
+   ${rcodes.map(c=>{const v=rv(c);return `<tr><td><div style="font-weight:700">${esc(pName(c))}</div><button class="btn ghost prep" data-c="${esc(c)}" type="button" style="margin-top:6px;white-space:nowrap">${WA_SVG} שליחת דוח</button></td><td>${v.n}</td><td>${v.rel}</td><td>${v.irr}</td><td>${v.meet}</td><td>${v.join}</td><td>${v.n-v.join}</td><td>${mult(c)>0?nf(pay(c))+' ₪':'ללא תמורה'}</td></tr>`;}).join('')}</tbody></table></div>`:'<div class="empty">עוד אין שותפים פעילים</div>'}
    <h3 class="fadein" style="margin:18px 0 6px">תגמול ותשלום</h3>`;
   $('#body').innerHTML=`<div class="bar fadein"><label for="pm" style="font-weight:700">חודש:</label><select id="pm">${months.map(m=>`<option value="${m}" ${m===M?'selected':''}>${mName(m)}</option>`).join('')}</select></div>
    ${repHtml}
