@@ -475,7 +475,31 @@ function partners(){
       <td><input class="pp" type="number" min="0" step="1" inputmode="numeric" value="${esc(r['פרמיה חודשית']||'')}" placeholder="כמה הלקוח משלם" style="width:130px"></td>
       <td>${nf((Number(r['פרמיה חודשית'])||0)*mult(c))} ₪</td>
       <td><input class="pd" type="date" value="${esc(String(r['שולם לשותף']||'').slice(0,10))}"></td></tr>`).join('')}</tbody></table></td></tr>`;
+  // דוחות חודשיים: כללי לאורנה + פרטי לכל שותף (נשלחים בוואטסאפ)
+  const ORNA_WA='972507228325';
+  const waTo=(phone,text)=>{const n=digits(phone);const mob=/^05\d{8}$/.test(n);return {url:'https://wa.me/'+(mob?'972'+n.slice(1):'')+'?text='+encodeURIComponent(text),mob};};
+  const R={};
+  all.filter(r=>isPartner(r['מקור'])&&mk(r['תאריך'])===M).forEach(r=>{const c=r['מקור'];const v=R[c]=R[c]||{n:0,rel:0,irr:0,meet:0,join:0};
+    v.n++; const irr=r._tab==='low'||r['סטטוס']==='לא רלוונטי'; if(irr)v.irr++; else v.rel++;
+    if(/נקבעה|חתם|התקיימה|לקוח/.test(r['סטטוס']))v.meet++; if(r['סטטוס']==='לקוח')v.join++;});
+  const rcodes=[...new Set(Object.keys(PM).filter(c=>PM[c]['סטטוס שת"פ']==='התחיל שיתוף פעולה').concat(Object.keys(R)).concat(Object.keys(S)))];
+  const rv=c=>R[c]||{n:0,rel:0,irr:0,meet:0,join:0};
+  const pay=c=>(S[c]?S[c].prem:0)*mult(c);
+  const pName=c=>(PM[c]&&PM[c]['שם'])||srcName(c);
+  const pText=c=>{const v=rv(c),p=PM[c]||{},k=mult(c);
+    return `שלום ${p['איש קשר']||p['שם']||''},\nהדוח החודשי של שיתוף הפעולה עם Connect ביטוח ופיננסים, ${mName(M)}:\n\nפניות שהגיעו דרככם: ${v.n}\nרלוונטיות: ${v.rel}\nלא רלוונטיות: ${v.irr}\nפגישות שנקבעו: ${v.meet}\nהצטרפו כלקוחות: ${v.join}\nעדיין לא הצטרפו: ${v.n-v.join}`+
+      (k>0?`\n\nתגמול לחודש זה: ${nf(pay(c))} ₪`:'')+`\n\nתודה רבה על שיתוף הפעולה!\nרואי, מצוות Connect ביטוח ופיננסים`;};
+  const oText=()=>{const t=rcodes.reduce((a,c)=>{const v=rv(c);a.n+=v.n;a.rel+=v.rel;a.irr+=v.irr;a.meet+=v.meet;a.join+=v.join;a.pay+=pay(c);return a;},{n:0,rel:0,irr:0,meet:0,join:0,pay:0});
+    return `אורנה, דוח שותפים חודשי, ${mName(M)}:\n\nשותפים פעילים: ${rcodes.length}\nפניות מהשותפים: ${t.n} (רלוונטיות ${t.rel}, לא רלוונטיות ${t.irr})\nפגישות: ${t.meet}\nהצטרפו: ${t.join}\nלתשלום לשותפים: ${nf(t.pay)} ₪\n\nלפי שותף:\n`+
+      rcodes.map(c=>{const v=rv(c);return `- ${pName(c)}: ${v.n} פניות, ${v.meet} פגישות, ${v.join} הצטרפו`+(mult(c)>0?`, לתשלום ${nf(pay(c))} ₪`:', ללא תגמול');}).join('\n');};
+  const repHtml=`<h3 class="fadein" style="margin:6px 0">דוחות חודשיים, ${esc(mName(M))}</h3>
+   <div class="bar fadein"><button class="btn prim" id="ornaRep" type="button">${WA_SVG} דוח כללי לאורנה</button></div>
+   ${rcodes.length?`<div style="overflow-x:auto"><table class="m"><thead><tr><th>שותף</th><th>נכנסו</th><th>רלוונטיים</th><th>לא רלוונטיים</th><th>פגישות</th><th>הצטרפו</th><th>לא הצטרפו</th><th>תגמול</th><th></th></tr></thead><tbody>
+   ${rcodes.map(c=>{const v=rv(c);return `<tr><td>${esc(pName(c))}</td><td>${v.n}</td><td>${v.rel}</td><td>${v.irr}</td><td>${v.meet}</td><td>${v.join}</td><td>${v.n-v.join}</td><td>${mult(c)>0?nf(pay(c))+' ₪':'ללא תמורה'}</td>
+     <td><button class="btn ghost prep" data-c="${esc(c)}" type="button">${WA_SVG} שליחת דוח</button></td></tr>`;}).join('')}</tbody></table></div>`:'<div class="empty">עוד אין שותפים פעילים</div>'}
+   <h3 class="fadein" style="margin:18px 0 6px">תגמול ותשלום</h3>`;
   $('#body').innerHTML=`<div class="bar fadein"><label for="pm" style="font-weight:700">חודש:</label><select id="pm">${months.map(m=>`<option value="${m}" ${m===M?'selected':''}>${mName(m)}</option>`).join('')}</select></div>
+   ${repHtml}
    <p class="note fadein">לכל שותף נקבע הסכם: <b>2 פרמיות</b> (אורנה נושאת בסיכון אם הלקוח מבטל) או <b>3 פרמיות</b> (השותף מסכים שהתשלום יקוזז אם הלקוח מבטל), או <b>0 פרמיות</b> לשותף שלא מבקש תמורה. אורנה כותבת לכל לקוח כמה הוא משלם בפרמיה החודשית, והסכום לתשלום מחושב לבד. ${Object.keys(PM).length} שותפים רשומים.</p>
    ${rows.length?`<div style="overflow-x:auto"><table class="m"><thead><tr><th>שותף</th><th>הסכם</th><th>לידים</th><th>פגישות</th><th>לקוחות (סה"כ)</th><th>לקוחות ב${esc(mName(M))}</th><th>פרמיות החודש</th><th>לתשלום</th><th>שולם</th><th></th></tr></thead><tbody>
    ${rows.map(([c,v])=>`<tr><td><button class="btn ghost pf" data-c="${esc(c)}" title="${esc(c)}">${esc(srcName(c))}</button></td>
@@ -484,6 +508,8 @@ function partners(){
      <td>${v.mc.length?`<button class="btn ghost op" data-c="${esc(c)}">${partners.open[c]?'סגירה':'פירוט'}</button> <button class="btn ghost cp" data-c="${esc(c)}">העתקת דוח</button>`:''}</td></tr>${v.mc.length&&partners.open[c]?sub(c,v):''}`).join('')}
    </tbody><tfoot><tr><td colspan="7"><b>סה"כ לתשלום ב${esc(mName(M))}</b></td><td><b>${nf(tot)} ₪</b></td><td colspan="2"></td></tr></tfoot></table></div>`:'<div class="empty">עוד אין לידים מקישורים של שותפים</div>'}`;
   $('#pm').onchange=e=>{partners.m=e.target.value;partners();};
+  $('#ornaRep').onclick=()=>window.open('https://wa.me/'+ORNA_WA+'?text='+encodeURIComponent(oText()),'_blank','noopener');
+  document.querySelectorAll('.prep').forEach(b=>b.onclick=()=>{const c=b.dataset.c,w=waTo((PM[c]||{})['טלפון'],pText(c));if(!w.mob)toast('אין לשותף נייד במערכת, בחרו איש קשר בוואטסאפ');window.open(w.url,'_blank','noopener');});
   document.querySelectorAll('.pf').forEach(b=>b.onclick=()=>{tab='crm';fSrc=b.dataset.c;kpiF='';fStatus='';chrome();body();});
   document.querySelectorAll('.op').forEach(b=>b.onclick=()=>{partners.open[b.dataset.c]=!partners.open[b.dataset.c];partners();});
   document.querySelectorAll('.pa').forEach(sel=>sel.onchange=()=>{const c=sel.dataset.c,old=String(mult(c));
