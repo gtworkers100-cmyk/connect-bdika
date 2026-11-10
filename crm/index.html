@@ -463,7 +463,7 @@ function partners(){
   if(!partners.m||months.indexOf(partners.m)<0) partners.m=now;
   partners.open=partners.open||{};
   const M=partners.m, mName=m=>{const [y,mo]=m.split('-');return new Date(+y,+mo-1,1).toLocaleDateString('he-IL',{month:'long',year:'numeric'});};
-  const mult=c=>Number((PM[c]||{})['פרמיות לתשלום'])===3?3:2;
+  const mult=c=>{const raw=String((PM[c]||{})['פרמיות לתשלום']??'').trim();const n=Number(raw);return raw!==''&&n===0?0:(n===3?3:2);};
   const S={};
   all.filter(r=>isPartner(r['מקור'])).forEach(r=>{const c=r['מקור'];const v=S[c]=S[c]||{leads:0,meet:0,clients:0,mc:[],prem:0,paid:0,miss:0};
     v.leads++; if(/נקבעה|חתם|התקיימה|לקוח/.test(r['סטטוס']))v.meet++; if(r['סטטוס']==='לקוח')v.clients++;
@@ -476,10 +476,10 @@ function partners(){
       <td>${nf((Number(r['פרמיה חודשית'])||0)*mult(c))} ₪</td>
       <td><input class="pd" type="date" value="${esc(String(r['שולם לשותף']||'').slice(0,10))}"></td></tr>`).join('')}</tbody></table></td></tr>`;
   $('#body').innerHTML=`<div class="bar fadein"><label for="pm" style="font-weight:700">חודש:</label><select id="pm">${months.map(m=>`<option value="${m}" ${m===M?'selected':''}>${mName(m)}</option>`).join('')}</select></div>
-   <p class="note fadein">לכל שותף נקבע הסכם: <b>2 פרמיות</b> (אורנה נושאת בסיכון אם הלקוח מבטל) או <b>3 פרמיות</b> (השותף מסכים שהתשלום יקוזז אם הלקוח מבטל). אורנה כותבת לכל לקוח כמה הוא משלם בפרמיה החודשית, והסכום לתשלום מחושב לבד. ${Object.keys(PM).length} שותפים רשומים.</p>
+   <p class="note fadein">לכל שותף נקבע הסכם: <b>2 פרמיות</b> (אורנה נושאת בסיכון אם הלקוח מבטל) או <b>3 פרמיות</b> (השותף מסכים שהתשלום יקוזז אם הלקוח מבטל), או <b>0 פרמיות</b> לשותף שלא מבקש תמורה. אורנה כותבת לכל לקוח כמה הוא משלם בפרמיה החודשית, והסכום לתשלום מחושב לבד. ${Object.keys(PM).length} שותפים רשומים.</p>
    ${rows.length?`<div style="overflow-x:auto"><table class="m"><thead><tr><th>שותף</th><th>הסכם</th><th>לידים</th><th>פגישות</th><th>לקוחות (סה"כ)</th><th>לקוחות ב${esc(mName(M))}</th><th>פרמיות החודש</th><th>לתשלום</th><th>שולם</th><th></th></tr></thead><tbody>
    ${rows.map(([c,v])=>`<tr><td><button class="btn ghost pf" data-c="${esc(c)}" title="${esc(c)}">${esc(srcName(c))}</button></td>
-     <td><select class="pa" data-c="${esc(c)}" aria-label="הסכם"><option value="2" ${mult(c)===2?'selected':''}>2 פרמיות</option><option value="3" ${mult(c)===3?'selected':''}>3 פרמיות (נושא בביטול)</option></select></td>
+     <td><select class="pa" data-c="${esc(c)}" aria-label="הסכם"><option value="2" ${mult(c)===2?'selected':''}>2 פרמיות</option><option value="3" ${mult(c)===3?'selected':''}>3 פרמיות (נושא בביטול)</option><option value="0" ${mult(c)===0?'selected':''}>0 פרמיות (ללא תמורה)</option></select></td>
      <td>${v.leads}</td><td>${v.meet}</td><td>${v.clients}</td><td>${v.mc.length}</td><td>${nf(v.prem)} ₪${v.miss?` <span class="b">חסרה פרמיה ל-${v.miss}</span>`:''}</td><td><b>${nf(v.prem*mult(c))} ₪</b></td><td>${v.mc.length?v.paid+'/'+v.mc.length:'-'}</td>
      <td>${v.mc.length?`<button class="btn ghost op" data-c="${esc(c)}">${partners.open[c]?'סגירה':'פירוט'}</button> <button class="btn ghost cp" data-c="${esc(c)}">העתקת דוח</button>`:''}</td></tr>${v.mc.length&&partners.open[c]?sub(c,v):''}`).join('')}
    </tbody><tfoot><tr><td colspan="7"><b>סה"כ לתשלום ב${esc(mName(M))}</b></td><td><b>${nf(tot)} ₪</b></td><td colspan="2"></td></tr></tfoot></table></div>`:'<div class="empty">עוד אין לידים מקישורים של שותפים</div>'}`;
@@ -494,7 +494,7 @@ function partners(){
   document.querySelectorAll('.pp').forEach(i=>i.onchange=()=>upd(i,'פרמיה חודשית'));
   document.querySelectorAll('.pd').forEach(i=>i.onchange=()=>upd(i,'שולם לשותף'));
   document.querySelectorAll('.cp').forEach(b=>b.onclick=()=>{const c=b.dataset.c,v=S[c],p=PM[c]||{},k=mult(c);
-    const t=`שלום ${p['איש קשר']||p['שם']||''},\nסיכום שיתוף הפעולה לחודש ${mName(M)}:\n`+v.mc.map(r=>`- ${r['שם']}: פרמיה חודשית ${nf(Number(r['פרמיה חודשית'])||0)} ₪ × ${k} = ${nf((Number(r['פרמיה חודשית'])||0)*k)} ₪`).join('\n')+`\nסה"כ לתשלום: ${nf(v.prem*k)} ₪\nתודה על שיתוף הפעולה!\nאורנה, Connect ביטוח ופיננסים`;
+    const t=k===0?`שלום ${p['איש קשר']||p['שם']||''},\nסיכום שיתוף הפעולה לחודש ${mName(M)}:\n`+v.mc.map(r=>`- ${r['שם']}`).join('\n')+`\nסה"כ ${v.mc.length} לקוחות הצטרפו בזכותך החודש.\nתודה רבה על ההמלצות!\nאורנה, Connect ביטוח ופיננסים`:`שלום ${p['איש קשר']||p['שם']||''},\nסיכום שיתוף הפעולה לחודש ${mName(M)}:\n`+v.mc.map(r=>`- ${r['שם']}: פרמיה חודשית ${nf(Number(r['פרמיה חודשית'])||0)} ₪ × ${k} = ${nf((Number(r['פרמיה חודשית'])||0)*k)} ₪`).join('\n')+`\nסה"כ לתשלום: ${nf(v.prem*k)} ₪\nתודה על שיתוף הפעולה!\nאורנה, Connect ביטוח ופיננסים`;
     (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('הדוח הועתק')).catch(()=>{prompt('העתיקו את הדוח:',t);});});
 }
 $('#refresh').onclick=load;
