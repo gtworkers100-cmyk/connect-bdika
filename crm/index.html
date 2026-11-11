@@ -227,7 +227,10 @@ function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');cl
 function ago(iso){if(!iso)return'';const d=new Date(iso),m=(Date.now()-d)/60000;if(m<1)return'עכשיו';if(m<60)return'לפני '+Math.round(m)+' דק\'';const h=m/60;if(h<24)return'לפני '+Math.round(h)+' שע\'';const dd=Math.round(h/24);if(dd<8)return dd===1?'אתמול':'לפני '+dd+' ימים';return d.toLocaleDateString('he-IL');}
 function digits(p){return String(p||'').replace(/\D/g,'');}
 function waLink(r){const n=digits(r['טלפון']);const first=String(r['שם']||'').split(' ')[0];
-  const msg=tab==='elem'?'':`היי ${first}, כאן מ-Connect ביטוח ופיננסים. קיבלנו את הבדיקה שמילאת באתר. מתי נוח לך לדבר כמה דקות, כדי לתאם פגישה עם אורנה?`;
+  const finds=String(r['ממצאים']||'').split('|').map(x=>x.trim()).filter(Boolean);
+  const msg=tab==='elem'?'':r['התאמה']==='לא סיים'
+    ?`היי ${first}, כאן מ-Connect ביטוח ופיננסים. ראינו שהתחלת את הבדיקה באתר ולא הספקת לסיים. אפשר להשלים אותה כאן, זה לוקח פחות משתי דקות: https://bdika.connect1.co.il/\nאו שנדבר כמה דקות בטלפון, מתי נוח לך?`
+    :`היי ${first}, כאן מ-Connect ביטוח ופיננסים. אלה התוצאות של הבדיקה שמילאת באתר:\n\nמצב: ${r['מצב בבדיקה']||''}`+(finds.length?`\nמה שווה לבדוק:\n`+finds.map(x=>'- '+x).join('\n'):'')+`\n\nאורנה תשמח לעבור על זה איתך, בלי עלות. מתי נוח לך לדבר כמה דקות?`;
   return 'https://wa.me/972'+n.slice(1)+(msg?'?text='+encodeURIComponent(msg):'');}
 function weekStart(){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-d.getDay());return d;}
 

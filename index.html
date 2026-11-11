@@ -277,12 +277,12 @@ function contact(){
   path.push(contact);
   show(`
     <div class="top"><button class="back" type="button" id="back">→ חזרה</button></div>
-    <h2>שם וטלפון, ומתחילים</h2>
-    <p class="lead">אם יעלה משהו ששווה לבדוק, אורנה תחזור אליך.</p>
+    <h2>שם ופלאפון, ומתחילים</h2>
+    <p class="lead">בסוף השאלון, התוצאות יישלחו אליך בוואטסאפ.</p>
     <form id="f_c" novalidate>
       <div class="hp" aria-hidden="true"><label>אל תמלאו<input name="website" tabindex="-1" autocomplete="off"></label></div>
       <div class="f"><label class="l" for="n_c">שם</label><input class="in" id="n_c" name="name" autocomplete="name" required><div class="err" id="e_n_c"></div></div>
-      <div class="f"><label class="l" for="p_c">טלפון נייד</label><input class="in" id="p_c" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" style="text-align:right" placeholder="050-0000000" required><div class="err" id="e_p_c"></div></div>
+      <div class="f"><label class="l" for="p_c">פלאפון</label><input class="in" id="p_c" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" style="text-align:right" placeholder="050-0000000" required><div class="err" id="e_p_c"></div></div>
       <label class="chk"><input type="checkbox" name="consent" required><span>אני מאשר/ת ש-Connect ביטוח ופיננסים תחזור אליי לגבי הבדיקה. הפרטים לא מועברים לאף אחד אחר.</span></label>
       <div class="err" id="e_x_c"></div>
       <button class="btn btn-primary" type="submit" disabled>להמשך לשאלות</button>
