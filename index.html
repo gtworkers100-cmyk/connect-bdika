@@ -267,7 +267,46 @@ function intro(){
     <p class="note">אנחנו מתמחים בפנסיה, ביטוחי בריאות וחיים וחיסכון. ביטוח רכב, דירה ועסק אנחנו לא עושים.</p>
   `);
   if (!window.__viewed) { window.__viewed=1; track("view"); }
-  document.getElementById("go").onclick = () => { track("start"); ask(0); };
+  document.getElementById("go").onclick = () => { track("start"); contact(); };
+}
+
+/* ===== פרטים לפני השאלון (11.11) ===== */
+let CONTACT=null;
+function contact(){
+  if (CONTACT) return ask(0);
+  path.push(contact);
+  show(`
+    <div class="top"><button class="back" type="button" id="back">→ חזרה</button></div>
+    <h2>לפני שמתחילים</h2>
+    <p class="lead">איך קוראים לך ולאיזה מספר אפשר לחזור? ככה, אם יעלה משהו ששווה לבדוק, אורנה תוכל לחזור אליך.</p>
+    <form id="f_c" novalidate>
+      <div class="hp" aria-hidden="true"><label>אל תמלאו<input name="website" tabindex="-1" autocomplete="off"></label></div>
+      <div class="f"><label class="l" for="n_c">שם</label><input class="in" id="n_c" name="name" autocomplete="name" required><div class="err" id="e_n_c"></div></div>
+      <div class="f"><label class="l" for="p_c">טלפון נייד</label><input class="in" id="p_c" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" style="text-align:right" placeholder="050-0000000" required><div class="err" id="e_p_c"></div></div>
+      <label class="chk"><input type="checkbox" name="consent" required><span>אני מאשר/ת ש-Connect ביטוח ופיננסים תחזור אליי לגבי הבדיקה. הפרטים לא מועברים לאף אחד אחר.</span></label>
+      <div class="err" id="e_x_c"></div>
+      <button class="btn btn-primary" type="submit" disabled>להמשך לשאלות</button>
+      <p class="fine" style="margin-top:8px">בלחיצה את/ה מאשר/ת את <button class="link fine" type="button" onclick="document.getElementById('privacy').showModal()">מדיניות הפרטיות</button>.</p>
+    </form>
+  `, "#n_c");
+  document.getElementById("back").onclick = goBack;
+  const f=document.getElementById("f_c"), sb=f.querySelector("button[type=submit]");
+  f.consent.addEventListener("change",()=>{sb.disabled=!f.consent.checked;});
+  f.phone.addEventListener("blur",()=>{const v=f.phone.value.trim(); if(!v) return; const ph=normPhone(v); setErr(f.phone,"e_p_c", ph?"":"צריך מספר נייד תקין, למשל 050-8123456"); if(ph) f.phone.value=ph;});
+  f.name.addEventListener("input",()=>{ if(!nameErr(f.name.value)) setErr(f.name,"e_n_c",""); });
+  f.onsubmit = e => {
+    e.preventDefault();
+    const name=f.name.value.trim(), phone=normPhone(f.phone.value);
+    let bad=false;
+    const ne=nameErr(name); setErr(f.name,"e_n_c", ne ? (bad=true,ne) : "");
+    setErr(f.phone,"e_p_c", !phone ? (bad=true,"צריך מספר נייד תקין, למשל 050-8123456") : "");
+    document.getElementById("e_x_c").textContent = !f.consent.checked ? (bad=true,"צריך לסמן אישור כדי להמשיך") : "";
+    if (bad) return;
+    CONTACT={name, phone};
+    if (!f.website.value) { send({kind:"partial", name, phone, src:SRC}).catch(()=>{}); track("contact"); }
+    path.pop();
+    ask(0);
+  };
 }
 
 function optBtn(q, o){
@@ -534,15 +573,15 @@ function leadForm(kind){
   const elem = kind==="elem";
   return `<form id="f_${kind}" novalidate>
     <div class="hp" aria-hidden="true"><label>אל תמלאו<input name="website" tabindex="-1" autocomplete="off"></label></div>
-    <div class="f"><label class="l" for="n_${kind}">שם</label><input class="in" id="n_${kind}" name="name" autocomplete="name" required><div class="err" id="e_n_${kind}"></div></div>
-    <div class="f"><label class="l" for="p_${kind}">טלפון נייד</label><input class="in" id="p_${kind}" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" style="text-align:right" placeholder="050-0000000" required><div class="err" id="e_p_${kind}"></div></div>
+    <div class="f"><label class="l" for="n_${kind}">שם</label><input class="in" id="n_${kind}" name="name" autocomplete="name" required value="${CONTACT?esc(CONTACT.name):""}"><div class="err" id="e_n_${kind}"></div></div>
+    <div class="f"><label class="l" for="p_${kind}">טלפון נייד</label><input class="in" id="p_${kind}" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" style="text-align:right" placeholder="050-0000000" required value="${CONTACT?esc(CONTACT.phone):""}"><div class="err" id="e_p_${kind}"></div></div>
     <div class="f"><label class="l" for="c_${kind}">עיר <span class="fine">(לא חובה)</span></label><input class="in" id="c_${kind}" name="city" autocomplete="address-level2"></div>
     ${elem ? `
       <div class="f"><span class="l" id="w_${kind}">מה צריך לבטח?</span><div class="seg" data-multi="needs" aria-labelledby="w_${kind}">${["רכב","דירה","עסק"].map(o=>`<button type="button" class="opt multi" aria-pressed="false" data-v="${o}"><span class="box"></span>${o}</button>`).join("")}</div></div>
     ` : `
       <div class="f"><span class="l" id="w_${kind}">מתי נוח שנחזור אליך?</span><div class="seg" data-one="when" aria-labelledby="w_${kind}">${["בוקר","צהריים","ערב"].map(o=>`<button type="button" class="opt" role="radio" aria-checked="false" data-v="${o}"><span class="box"></span>${o}</button>`).join("")}</div></div>
     `}
-    <label class="chk"><input type="checkbox" name="consent" required><span>${elem
+    <label class="chk"><input type="checkbox" name="consent" required ${CONTACT&&!elem?"checked":""}><span>${elem
       ? "אני מאשר/ת להעביר את הפרטים שלי לסוכן ביטוח אלמנטרי שעובד עם Connect, כדי שיחזור אליי."
       : "אני מאשר/ת ש-Connect ביטוח ופיננסים תחזור אליי לגבי הבדיקה. הפרטים לא מועברים לאף אחד אחר."}</span></label>
     <div class="err" id="e_x_${kind}"></div>

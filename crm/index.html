@@ -314,7 +314,7 @@ function body(){
   $('#body').innerHTML=`
    <div class="bar fadein">
      <input id="q" type="search" placeholder="חיפוש שם, טלפון, עיר, הערה" value="${esc(q)}">
-     ${tab==='crm'?['הכל','מתאים','לבדיקה','B2B'].map(x=>`<button class="chip ${fFit===x?'on':''}" data-fit="${x}">${x}</button>`).join(''):''}
+     ${tab==='crm'?['הכל','מתאים','לבדיקה','לא סיים','B2B'].map(x=>`<button class="chip ${fFit===x?'on':''}" data-fit="${x}">${x}</button>`).join(''):''}
      <select id="fs"><option value="">כל הסטטוסים</option>${sts.map(s=>`<option ${fStatus===s?'selected':''}>${esc(s)}</option>`).join('')}</select>
      <select id="fsrc"><option value="">כל המקורות</option>${srcs.map(s=>`<option value="${esc(s)}" ${fSrc===s?'selected':''}>${esc(srcName(s))}</option>`).join('')}</select>
      <div class="view" role="group" aria-label="תצוגה"><button type="button" data-v="cards">כרטיסים</button><button type="button" data-v="list">רשימה</button></div>
