@@ -511,13 +511,12 @@ function fit(a){
   const me = INC[a.income]||0, sp = INC[a.spouseIncome]||0;
   const notWorking = onlyNoWork(a);
   const notes=[];
-  if (notWorking && sp<=1) return {fit:"לא מתאים", why:"לא עובד/ת ואין הכנסה משמעותית בבית"};
-  if (me===1 && sp<=1) return {fit:"לא מתאים", why:"הכנסה עד 8,000 ובלי הכנסה משמעותית של בן/בת זוג"};
   if (a.employees==="כן") notes.push("מעסיק/ה עובדים (פוטנציאל B2B)");
   if (me===4 || sp===4) notes.push("הכנסה גבוהה");
   const check=[];
   if (a.age==="עד 24") check.push("מתחת ל-25");
   if (!me) check.push(notWorking?"לא עובד/ת":"לא ציין/ה הכנסה");
+  else if (me===1 && sp<=1) check.push("הכנסה עד 8,000 במשק הבית");
   else if (me<=2 && sp<=1) check.push("הכנסה עד 15,000 במשק הבית");
   if (a.bizMax==="פחות משנה") check.push("עסק פחות משנה");
   if (a.agent==="לא יודע/ת") check.push("לא ברור אם יש סוכן");
