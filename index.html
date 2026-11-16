@@ -273,6 +273,7 @@ function intro(){
 /* ===== פרטים לפני השאלון (11.11) ===== */
 let CONTACT=null;
 function contact(){
+  if(!window.__seenC){ window.__seenC=1; track("contact_shown"); }
   if (CONTACT) return ask(0);
   path.push(contact);
   show(`
@@ -328,6 +329,7 @@ function ask(i){
   const vq = visibleQ();
   if (i >= vq.length) return result();
   const q = vq[i];
+  window.__seenQ=window.__seenQ||{}; if(!window.__seenQ[q.id]){ window.__seenQ[q.id]=1; track("q"+(i+1)+"_"+q.id); }
   path.push(() => ask(i));
   const subs = [q.sub, q.sub2].filter(Boolean);
   const liveSubs = () => subs.filter(s => A[q.id]!==undefined && (!s.when || s.when(A)));
