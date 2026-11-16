@@ -396,6 +396,7 @@ function card(r){
     <div class="acts">
       <a class="btn wa" href="${waLink(r)}" target="_blank" rel="noopener">${WA_SVG} וואטסאפ</a>
       <a class="btn call" href="tel:${digits(r['טלפון'])}" title="${esc(r['טלפון'])}">חיוג</a>
+      <a class="btn ghost" href="${ornaLead(r)}" target="_blank" rel="noopener" title="שליחת התשובות לאורנה בוואטסאפ">לאורנה</a>
       ${x.sel}
       <button class="btn ghost more" type="button">פרטים</button>
     </div>
@@ -418,6 +419,15 @@ function rowHtml(r){
     <td class="c"><div class="acts"><a class="btn ic wa" href="${waLink(r)}" target="_blank" rel="noopener" title="וואטסאפ" aria-label="וואטסאפ">${WA_SVG}</a><button class="btn ghost more" type="button">פרטים</button></div></td>
   </tr>`;
 }
+function ornaLead(r){
+  const L=[['שם','שם'],['טלפון','טלפון'],['עיר','עיר'],['זמן נוח','זמן נוח'],['התאמה','התאמה'],['הערה','למה'],['מצב בבדיקה','מצב בבדיקה'],['ציון','ציון'],['רוצה לבדוק','רוצה לבדוק'],['סוכן היום','סוכן היום'],['גיל','גיל'],['מצב משפחתי','מצב משפחתי'],['ילדים','ילדים'],['תעסוקה','תעסוקה'],['ותק עסק','ותק עסק'],['עובדים','עובדים'],['הכנסה','הכנסה'],['בן/בת זוג','בן/בת זוג'],['הכנסת בן/בת זוג','הכנסת בן/בת זוג'],['יש היום','יש היום'],['בדיקה אחרונה','בדיקה אחרונה'],['יודע דמי ניהול','יודע דמי ניהול'],['מעשן','מעשן'],['מה לבטח','מה לבטח'],['תאריך פגישה','תאריך פגישה'],['הערות','הערות']];
+  const lines=['ליד חדש מהבדיקה באתר'];
+  L.forEach(([lab,k])=>{const v=r[k];if(v!==''&&v!=null)lines.push(lab+': '+String(v).replace(/\s*\|\s*/g,', '));});
+  const f=String(r['ממצאים']||'').split('|').map(x=>x.trim()).filter(Boolean);
+  if(f.length){lines.push('');lines.push('ממצאים:');f.forEach(x=>lines.push('- '+x));}
+  if(r['מקור'])lines.push('','מקור: '+srcName(r['מקור']));
+  return 'https://wa.me/972507228325?text='+encodeURIComponent(lines.join('\n'));
+}
 function details(r){
   const fnd=String(r['ממצאים']||'').split('|').map(s=>s.trim()).filter(Boolean);
   const keys=[['טלפון','טלפון'],['עיר','עיר'],['זמן נוח','זמן נוח'],['התאמה','התאמה'],['למה','למה'],['מצב בבדיקה','מצב בבדיקה'],['ציון','ציון'],['רוצה לבדוק','רוצה לבדוק'],['סוכן היום','סוכן היום'],['גיל','גיל'],['מצב משפחתי','מצב משפחתי'],['ילדים','ילדים'],['תעסוקה','תעסוקה'],['ותק עסק','ותק עסק'],['עובדים','עובדים'],['הכנסה','הכנסה'],['בן/בת זוג','בן/בת זוג'],['הכנסת בן/בת זוג','הכנסת בן/בת זוג'],['יש היום','יש היום'],['בדיקה אחרונה','בדיקה אחרונה'],['דמי ניהול','יודע דמי ניהול'],['מעשן','מעשן'],['מה לבטח','מה לבטח'],['מקור','מקור']];
@@ -432,7 +442,7 @@ function details(r){
       ${tab!=='elem'&&isPartner(r['מקור'])?`<label>שולם לשותף (${esc(srcName(r['מקור']))})</label><input class="paid" type="date" value="${esc(String(r['שולם לשותף']||'').slice(0,10))}">${r['תאריך לקוח']?`<p class="note" style="margin:4px 0 0">הפך ללקוח: ${esc(new Date(r['תאריך לקוח']).toLocaleDateString('he-IL'))}</p>`:''}`:''}
       <label>הערות</label><textarea class="notes">${esc(r['הערות']||'')}</textarea>
     </div>
-    <div class="acts" style="margin-top:10px"><button class="btn prim save" type="button">שמירה</button><a class="btn wa" href="${waLink(r)}" target="_blank" rel="noopener">וואטסאפ</a><a class="btn call" href="tel:${digits(r['טלפון'])}">${esc(r['טלפון'])}</a></div>
+    <div class="acts" style="margin-top:10px"><button class="btn prim save" type="button">שמירה</button><a class="btn wa" href="${waLink(r)}" target="_blank" rel="noopener">וואטסאפ</a><a class="btn ghost" href="${ornaLead(r)}" target="_blank" rel="noopener">שליחה לאורנה</a><a class="btn call" href="tel:${digits(r['טלפון'])}">${esc(r['טלפון'])}</a></div>
    </div>`;
   d.querySelector('.hd button').onclick=()=>d.close();
   d.querySelector('.save').onclick=()=>{const ch={'הערות':d.querySelector('.notes').value};const m=d.querySelector('.meet');if(m)ch['תאריך פגישה']=m.value?m.value.replace('T',' '):'';const pr=d.querySelector('.prem');if(pr)ch['פרמיה חודשית']=pr.value;const pd=d.querySelector('.paid');if(pd)ch['שולם לשותף']=pd.value;save(r,ch,null,()=>d.close());};
